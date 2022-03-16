@@ -1,0 +1,134 @@
+"use strict";
+export default (sequelize, DataTypes) => {
+  const User = sequelize.define("user", {
+    user_id: {
+      type: DataTypes.INTEGER,
+      autoIncrement: true,
+      primaryKey: true,
+      unique: true,
+    },
+    firstname: {
+      type: DataTypes.STRING(30),
+      allowNull: false,
+      validate: {
+        notNull: {
+          msg: "First name is required!",
+        },
+        isAlpha: {
+          args: true,
+          msg: "Please provide a valid first name",
+        },
+      },
+    },
+    lastname: {
+      type: DataTypes.STRING(30),
+      allowNull: false,
+      validate: {
+        notNull: {
+          msg: "Last name is required!",
+        },
+        isAlpha: {
+          args: true,
+          msg: "Please provide a valid last name",
+        },
+      },
+    },
+    gender: {
+      type: DataTypes.ENUM,
+      values: ["male", "female"],
+    },
+    identity_number: {
+      type: DataTypes.STRING(9),
+      allowNull: false,
+      unique: true,
+      validate: {
+        notNull: {
+          msg: "User identity required!",
+        },
+        isNumeric: {
+          args: true,
+          msg: "Invalid identity number!",
+        },
+        len: 9,
+      },
+    },
+    contact: {
+      type: DataTypes.STRING,
+      allowNull: false,
+      unique: true,
+      validate: {
+        notNull: {
+          msg: "Please provide user contact",
+        },
+        len: 13,
+      },
+    },
+    email: {
+      type: DataTypes.STRING(30),
+      allowNull: false,
+      unique: true,
+      validate: {
+        notNull: {
+          msg: "Please provide user email",
+        },
+        isEmail: {
+          args: true,
+          msg: "Please provide a valid email",
+        },
+      },
+    },
+    address: {
+      type: DataTypes.TEXT,
+      allowNull: false,
+      validate: {
+        notNull: {
+          msg: "Please provide customer address!",
+        },
+      },
+    },
+    photo: {
+      type: DataTypes.STRING,
+      defaultValue: "user.png",
+    },
+    role: {
+      type: DataTypes.ENUM,
+      values: ["manager", "accountant", "collector"],
+      allowNull: false,
+      validate: {
+        notNull: {
+          msg: "Please provide user role",
+        },
+      },
+    },
+    rights: {
+      type: DataTypes.ARRAY(DataTypes.STRING(30)),
+    },
+    password: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      validate: {
+        min: 8,
+        max: 12,
+      },
+    },
+    password_confirm: {
+      type: DataTypes.STRING,
+      allowNull: true,
+      validate: {
+        isValid(value) {
+          if (value !== this.password) {
+            throw new Error("passwords are not the same!");
+          }
+        },
+      },
+    },
+    password_changed_at: {
+      type: DataTypes.DATE,
+    },
+    active: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: true,
+    },
+  });
+  return User;
+};
