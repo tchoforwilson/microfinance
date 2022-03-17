@@ -19,7 +19,6 @@ describe("Middleware_Tests", () => {
       };
       // 2. Call method with user
       const result = restrictTo(roles)(req, res, next);
-      console.log(next);
     });
   });
 });
