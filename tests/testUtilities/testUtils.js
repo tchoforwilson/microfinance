@@ -1,3 +1,4 @@
+import jwt from "jsonwebtoken";
 /**
  * Generate a sign token
  * @param {String} id -> Token payload
