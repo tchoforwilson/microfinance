@@ -111,6 +111,27 @@ describe("UserController_Tests", () => {
         .set("Authorization", header);
       expect(res.status).toBe(404);
     });
+    it("Test_GetUser It should return 200 if the user is found", async () => {
+      // 1. Generate random user
+      const user = UnitTest.GenRandomValidUserWithPassword();
+
+      // 2. Populate DB with user
+      const newUser = await User.create(user);
+
+      // 3. Get response
+      const res = await request(server)
+        .get(`/api/v1/users/${newUser.user_id}`)
+        .set("Authorization", header);
+
+      // 4. Check response
+      expect(res.status).toBe(200);
+      const data = JSON.parse(res.text);
+      expect(data.status).toBe("success");
+      expect(data.data.data.firstname).toBe(newUser.firstname);
+      expect(data.data.data.email).toBe(newUser.email);
+      expect(data.data.data.contact).toBe(newUser.contact);
+      expect(data.data.data.role).toBe(newUser.role);
+    });
   });
 });
 
