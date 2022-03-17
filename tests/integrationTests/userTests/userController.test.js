@@ -78,7 +78,7 @@ describe("UserController_Tests", () => {
     });
   });
   describe("GET /api/v1/users", () => {
-    it("Test_GetAllUsers It should return 200 for documents found", async () => {
+    it("Test_GetAllUsers_1 It should return 200 for documents found", async () => {
       const res = await request(server)
         .get("/api/v1/users/")
         .set("Authorization", header);
@@ -88,6 +88,18 @@ describe("UserController_Tests", () => {
       expect(data.data.docs.count).toBe(1);
       // TODO: check that it is a n array
       //expect(data.data.docs.rows).toBeArray();
+    });
+    it("Test_GetAllUsers_2 It should return 200 for documents found", async () => {
+      // 1. Generate random valid users
+      const users = UnitTest.GenRandValidUsers(MAX);
+
+      const val = await User.bulkCreate(users);
+
+      // 2. Populate database with user
+      const res = await request(server)
+        .get("/api/v1/users/")
+        .set("Authorization", header);
+      expect(res.status).toBe(200);
     });
   });
 });
