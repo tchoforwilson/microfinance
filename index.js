@@ -6,10 +6,17 @@ process.on("uncaughtException", (err) => {
 });
 
 import app from "./app.js";
-import { connectDB } from "./config/connect.js";
+import { connectDB } from "./config/database.js";
 
-// connect to the database
-connectDB();
+// connect to the database if we are in development or production
+const env = process.env.NODE_ENV;
+
+if (env === "production") {
+  connectDB(env, {});
+}
+if (env === "development") {
+  connectDB(env, { alter: true });
+}
 
 const port = process.env.PORT || 5000;
 const server = app.listen(port, () => {
