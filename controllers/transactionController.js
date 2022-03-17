@@ -25,6 +25,10 @@ export const creditMe = catchAsync(async (req, res, next) => {
   // 2. Get user account
   const account = await user.getAccount();
 
+  if (!account.active) {
+    return next(new AppError("This account is closed!", 403));
+  }
+
   // 3. Select source
   const source = await Source.findByPk(req.body.source_id);
   if (!source) {
@@ -71,7 +75,7 @@ export const creditUser = catchAsync(async (req, res, next) => {
 
   // 3. Check if account is active
   if (!account.active) {
-    return next(new AppError("Account close!", 400));
+    return next(new AppError("Can't perform action, Account closed!", 400));
   }
 
   // 4. Credit user account with amount from source
@@ -95,7 +99,7 @@ export const deposit = catchAsync(async (req, res, next) => {
   // 2. Get current user
   const currentUser = await User.findByPk(parseInt(req.user.user_id, 10));
 
-  // 3. Get current user account
+  // 3. Get customer account
   const currentAccount = await currentUser.getAccount();
 
   if (currentAccount.balance < amount) {
