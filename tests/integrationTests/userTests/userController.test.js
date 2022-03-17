@@ -4,7 +4,6 @@ import * as RandomVal from "./../../testUtilities/GenRandomVal.js";
 import * as UnitTest from "./../../testUtilities/unit_testbases.js";
 import { signToken } from "./../../testUtilities/testUtils.js";
 import database from "./../../../config/database.js";
-import { before } from "lodash";
 
 const User = database.user;
 const Account = database.account;
@@ -21,7 +20,7 @@ describe("UserController_Tests", () => {
     user.password = "pass1234";
     user.password_confirm = "pass1234";
     user.role = "manager";
-    user.rights.push("createUser", "getUsers", "getUser");
+    user.rights.push("createUser", "getUsers", "getUser", "updateUser");
     adminUser = await User.create(user);
     const token = signToken(adminUser.user_id);
     header = "Bearer " + token;
@@ -131,6 +130,24 @@ describe("UserController_Tests", () => {
       expect(data.data.data.email).toBe(newUser.email);
       expect(data.data.data.contact).toBe(newUser.contact);
       expect(data.data.data.role).toBe(newUser.role);
+    });
+  });
+  describe("PATCH /api/v1/users/:id", () => {
+    it("Test_UpdateUser It should return 404 for user not found", async () => {
+      // 1. Generate random id number
+      const id = RandomVal.GenRandomInteger(MAX);
+
+      // 2. Generate random user
+      const user = await UnitTest.GenRandomValidUser();
+
+      // 3. Send request
+      const res = await request(server)
+        .patch(`/api/v1/users/${id}`)
+        .send(user)
+        .set("Authorization", header);
+
+      // 4. Expect response
+      expect(res.status).toBe(404);
     });
   });
 });
