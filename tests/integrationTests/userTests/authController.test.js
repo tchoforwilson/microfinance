@@ -4,7 +4,7 @@ import bcrypt from "bcrypt";
 import * as RandomVal from "./../../testUtilities/GenRandomVal.js";
 import * as UnitTest from "./../../testUtilities/unit_testbases.js";
 import database from "./../../../config/database.js";
-import { expectCt } from "helmet";
+
 const User = database.user;
 const Account = database.account;
 describe("AuthController_Tests", () => {
@@ -14,18 +14,23 @@ describe("AuthController_Tests", () => {
   let password;
   let passwordConfirm;
   // 1. Call the server
-  beforeEach(async () => {
+  beforeAll(async () => {
     const mod = await import("../../../index");
     server = mod.default;
+    await User.sequelize.sync();
+    await Account.sequelize.sync();
   });
 
-  afterEach(async () => {
+  afterAll(async () => {
     if (server) {
-      server.close();
-      await User.destroy({ where: {}, truncate: false });
-      await Account.destroy({ where: {}, truncate: false });
+      await server.close();
     }
   });
+  afterEach(async () => {
+    await User.destroy({ where: {}, truncate: false });
+    await Account.destroy({ where: {}, truncate: false });
+  });
+
   /*****************************************/
   /***************SIGNUP TEST**************/
   /****************************************/
