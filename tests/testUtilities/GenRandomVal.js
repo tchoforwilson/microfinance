@@ -12,7 +12,7 @@ const smallMaxAmount = 100000;
 const bigMinAmount = 500000;
 const bigMaxAmount = 5000000;
 
-const roles = ["manager", "accountant", "collector"];
+const roles = ["accountant", "collector"];
 const rights = ["CloseSession", "OpenSession", "CreateZone"];
 
 export const GenRandomInteger = (max) => {
