@@ -149,6 +149,29 @@ describe("UserController_Tests", () => {
       // 4. Expect response
       expect(res.status).toBe(404);
     });
+    it("Test_UpdateUser It should return 201 for documents update", async () => {
+      // 1. Generate random user
+      const user = UnitTest.GenRandomValidUser();
+
+      // 2. Populate database with user
+      const newUser = await User.create(user);
+
+      // 3. Generate updatedUser data
+      const updatedUser = UnitTest.GenRandomValidUser();
+
+      // 4. Send request
+      const res = await request(server)
+        .patch(`/api/v1/users/${newUser.user_id}`)
+        .send(updatedUser)
+        .set("Authorization", header);
+
+      // 5. expect response
+      expect(res.status).toBe(201);
+
+      // 6. Fetch user and compare with updated value
+      const returnUser = await User.findByPk(newUser.user_id);
+      expect(returnUser.firstname).toBe(updatedUser.firstname);
+    });
   });
 });
 
