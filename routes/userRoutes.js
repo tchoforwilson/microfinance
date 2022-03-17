@@ -25,7 +25,7 @@ router
   .get(authController.hasRight("getUsers"), userController.getUsers);
 router
   .route("/:id")
-  .get(authController.hasRight("getUsers"), userController.getUser)
+  .get(authController.hasRight("getUser"), userController.getUser)
   .patch(authController.hasRight("updateUser"), userController.updateUser)
   .delete(authController.hasRight("deleteUser"), userController.deleteUser);
 
