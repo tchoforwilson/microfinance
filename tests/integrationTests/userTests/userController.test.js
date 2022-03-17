@@ -21,7 +21,7 @@ describe("UserController_Tests", () => {
     user.password = "pass1234";
     user.password_confirm = "pass1234";
     user.role = "manager";
-    user.rights.push("createUser", "getUsers");
+    user.rights.push("createUser", "getUsers", "getUser");
     adminUser = await User.create(user);
     const token = signToken(adminUser.user_id);
     header = "Bearer " + token;
@@ -93,13 +93,23 @@ describe("UserController_Tests", () => {
       // 1. Generate random valid users
       const users = UnitTest.GenRandValidUsers(MAX);
 
-      const val = await User.bulkCreate(users);
+      await User.bulkCreate(users);
 
       // 2. Populate database with user
       const res = await request(server)
         .get("/api/v1/users/")
         .set("Authorization", header);
       expect(res.status).toBe(200);
+    });
+  });
+  describe("GET /api/v1/users/:id", () => {
+    it("Test_GetUser It should return 404 if the user is not found", async () => {
+      const id = RandomVal.GenRandomInteger(MAX);
+
+      const res = await request(server)
+        .get(`/api/v1/users/${id}`)
+        .set("Authorization", header);
+      expect(res.status).toBe(404);
     });
   });
 });
