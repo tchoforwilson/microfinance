@@ -165,7 +165,7 @@ export const getAll = (Model) =>
  */
 export const updateOne = (Model, Type) =>
   catchAsync(async (req, res, next) => {
-    let doc = [];
+    let doc;
 
     /**
      * If there is a body role, means we are updating user else we are updating a customer
@@ -197,16 +197,13 @@ export const updateOne = (Model, Type) =>
       //   });
     }
 
-    // 4. Find user with the ID, then use it to update address
-    doc = await Model.findByPk(parseInt(req.params.id, 10));
-
     // check if document was updated
     if (doc[0] === 0) {
       return next(new AppError("No document found with this ID!", 404));
     }
 
     // SEND RESPONSE
-    res.status(200).json({
+    res.status(201).json({
       status: "success",
       data: null,
     });
