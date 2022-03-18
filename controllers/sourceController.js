@@ -30,12 +30,6 @@ export const createSource = catchAsync(async (req, res, next) => {
     },
   });
 
-  // 2. Create source
-  req.body.balance = req.body.amount;
-  const source = await Source.create(req.body, {
-    fields: ["amount", "balance", "zone_id"],
-  });
-
   if (data) {
     return next(
       new AppError(
@@ -44,6 +38,12 @@ export const createSource = catchAsync(async (req, res, next) => {
       )
     );
   }
+
+  // 2. Create source
+  req.body.balance = req.body.amount;
+  const source = await Source.create(req.body, {
+    fields: ["amount", "balance", "zone_id"],
+  });
 
   res.status(200).json({
     status: "success",
