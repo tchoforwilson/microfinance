@@ -125,11 +125,12 @@ describe("UserController_Tests", () => {
       // 4. Check response
       expect(res.status).toBe(200);
       const data = JSON.parse(res.text);
+      const returnUser = data.data.data;
       expect(data.status).toBe("success");
-      expect(data.data.data.firstname).toBe(newUser.firstname);
-      expect(data.data.data.email).toBe(newUser.email);
-      expect(data.data.data.contact).toBe(newUser.contact);
-      expect(data.data.data.role).toBe(newUser.role);
+      expect(returnUser.firstname).toBe(newUser.firstname);
+      expect(returnUser.email).toBe(newUser.email);
+      expect(returnUser.contact).toBe(newUser.contact);
+      expect(returnUser.role).toBe(newUser.role);
     });
   });
   describe("PATCH /api/v1/users/:id", () => {
@@ -170,7 +171,9 @@ describe("UserController_Tests", () => {
 
       // 6. Fetch user and compare with updated value
       const returnUser = await User.findByPk(newUser.user_id);
-      expect(returnUser.firstname).toBe(updatedUser.firstname);
+      Object.keys(updatedUser).forEach((el) => {
+        expect(updatedUser).toHaveProperty(el, returnUser[el]);
+      });
     });
   });
 });
