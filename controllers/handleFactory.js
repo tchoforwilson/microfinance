@@ -143,7 +143,7 @@ export const getAll = (Model) =>
 
     const docs = await features.query;
 
-    if (!docs) {
+    if (docs.count === 0) {
       return next(new AppError("No documents found!", 404));
     }
 
