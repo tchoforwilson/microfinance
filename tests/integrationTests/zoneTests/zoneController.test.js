@@ -57,7 +57,7 @@ describe("ZoneController_Tests", () => {
       truncate: false,
     });
     await Zone.destroy({
-      where: { [Op.not]: [{ user_id: adminUser.user_id }] },
+      where: {},
       truncate: false,
     });
   });
@@ -80,6 +80,16 @@ describe("ZoneController_Tests", () => {
       expect(returnZone.name).toBe(zone.name);
       expect(returnZone.description).toBe(zone.description);
       expect(returnZone.user_id).toBe(zone.user_id);
+    });
+    describe("GET /api/v1/zone", () => {
+      it("Test_GetAllZones It should return 404 for zones not found", async () => {
+        // 1. send request
+        const res = await request(server)
+          .get("/api/v1/zone")
+          .set("Authorization", header);
+
+        expect(res.status).toBe(404);
+      });
     });
   });
 });
