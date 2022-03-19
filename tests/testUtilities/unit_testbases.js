@@ -85,7 +85,9 @@ export const GenRandomValidZone = (userId) => {
 export const GenRandomValidZones = (max, userIds) => {
   let zones = [];
   for (var i = 0; i < max; i++) {
-    zones.push(GenRandomValidZone(userIds[i]));
+    zones.push(
+      GenRandomValidZone(GenRandomVal.GenRandomSingleItemFromArray(userIds))
+    );
   }
   return zones;
 };
