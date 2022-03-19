@@ -134,6 +134,23 @@ describe("ZoneController_Tests", () => {
         // 3. Expect result
         expect(res.status).toBe(404);
       });
+      it("Test_GetZone It should return 200 for zone found", async () => {
+        // 1. Generate random zone
+        const genZone = UnitTest.GenRandomValidZone(adminUser.user_id);
+        // 2. Create zone in table
+        const zone = await Zone.create(genZone);
+        const zoneData = zone.dataValues;
+        // 2. Send request
+        const res = await request(server)
+          .get(`/api/v1/zone/${zone.zone_id}`)
+          .set("Authorization", header);
+        // 3. Expect result
+        expect(res.status).toBe(200);
+        const data = JSON.parse(res.text);
+        const returnZone = data.data.data;
+        expect(returnZone.zone_id).toEqual(zoneData.zone_id);
+        expect(returnZone.user_id).toEqual(zoneData.user_id);
+      });
     });
   });
 });
