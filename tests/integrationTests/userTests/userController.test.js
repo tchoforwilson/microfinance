@@ -195,6 +195,25 @@ describe("UserController_Tests", () => {
       // 3. Expect results
       expect(res.status).toBe(404);
     });
+    it("Test_DeleteUser It should return 204 for successful user delete", async () => {
+      // 1. Generate random user
+      const user = UnitTest.GenRandomValidUser();
+
+      // 2. Populate database with user
+      const newUser = await User.create(user);
+
+      // 3. Send request
+      const res = await request(server)
+        .delete(`/api/v1/users/${newUser.user_id}`)
+        .set("Authorization", header);
+
+      // 4. expect response
+      expect(res.status).toBe(204);
+
+      // 6. Fetch user and compare with updated value
+      const returnUser = await User.findByPk(newUser.user_id);
+      expect(returnUser.active).toBe(false);
+    });
   });
 });
 
