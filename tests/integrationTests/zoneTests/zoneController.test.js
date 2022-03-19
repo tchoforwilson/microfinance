@@ -181,4 +181,16 @@ describe("ZoneController_Tests", () => {
       expect(res.status).toBe(204);
     });
   });
+  describe("DELETE /api/v1/zone/:id", () => {
+    it("Test_DeleteZone It should return 404 for zone not found", async () => {
+      // 1. Generate random valid id
+      const id = RandomVal.GenRandomInteger(MAX);
+      // 2. Send request
+      const res = await request(server)
+        .delete(`/api/v1/zone/${id}`)
+        .set("Authorization", header);
+      // 3. Expect result
+      expect(res.status).toBe(404);
+    });
+  });
 });
