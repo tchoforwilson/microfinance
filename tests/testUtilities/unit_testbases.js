@@ -69,7 +69,7 @@ export const GenRandomValidUserAccount = (userId, type = "user") => {
 export const GenRandomValidZone = (userId) => {
   let zone = {};
   zone.name = GenRandomVal.GenRandomValidString(smallMaxLength);
-  zone.description = GenRandomVal.GenRandomInValidText(bigMaxLength);
+  zone.description = GenRandomVal.GenRandomValidText(bigMaxLength);
   zone.longitude = GenRandomVal.GenRandomIntegerInRange(-90, 90);
   zone.latitude = GenRandomVal.GenRandomIntegerInRange(-180, 180);
   zone.user_id = userId;
