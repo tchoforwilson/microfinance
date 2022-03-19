@@ -38,8 +38,8 @@ router
 // Statistical routes
 
 router
-  .route("/sum")
-  .post(
+  .route("/sum/:id")
+  .patch(
     authController.restrictTo("manager"),
     transactionController.sumTransactions
   );
