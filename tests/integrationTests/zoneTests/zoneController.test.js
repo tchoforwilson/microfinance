@@ -123,5 +123,17 @@ describe("ZoneController_Tests", () => {
         });
       });
     });
+    describe("GET /api/v1/zone/:id", () => {
+      it("Test_GetZone It should return 404 for zone not found", async () => {
+        // 1. Generate random valid id
+        const id = RandomVal.GenRandomInteger(MAX);
+        // 2. Send request
+        const res = await request(server)
+          .get(`/api/v1/zone/${id}`)
+          .set("Authorization", header);
+        // 3. Expect result
+        expect(res.status).toBe(404);
+      });
+    });
   });
 });
