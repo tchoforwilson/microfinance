@@ -49,9 +49,9 @@ export const updateZone = catchAsync(async (req, res, next) => {
   }
 
   // SEND RESPONSE
-  res.status(200).json({
+  res.status(204).json({
     status: "success",
-    data: zone,
+    data: null,
   });
 });
 
