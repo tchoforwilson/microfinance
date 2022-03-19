@@ -164,5 +164,21 @@ describe("ZoneController_Tests", () => {
       // 3. Expect result
       expect(res.status).toBe(404);
     });
+    it("Test_UpdateZone It return 204 successful zone update", async () => {
+      // 1. Generate random valid zone
+      const genZone = UnitTest.GenRandomValidZone(adminUser.user_id);
+      // 2. Populate table with user
+      const zone = await Zone.create(genZone);
+      // 3. Generate zone for update
+      const updateZone = UnitTest.GenRandomValidZone(adminUser.user_id);
+
+      // 4. Send request
+      const res = await request(server)
+        .patch(`/api/v1/zone/${zone.zone_id}`)
+        .set("Authorization", header)
+        .send(updateZone);
+      // 5. Expect result
+      expect(res.status).toBe(204);
+    });
   });
 });
