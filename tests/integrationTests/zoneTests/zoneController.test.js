@@ -205,4 +205,5 @@ describe("ZoneController_Tests", () => {
       expect(res.status).toBe(204);
     });
   });
+  // TODO: Write the test for this route "GET /zone/1/customers"
 });
