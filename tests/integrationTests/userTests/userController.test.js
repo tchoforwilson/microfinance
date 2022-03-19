@@ -20,7 +20,13 @@ describe("UserController_Tests", () => {
     user.password = "pass1234";
     user.password_confirm = "pass1234";
     user.role = "manager";
-    user.rights.push("createUser", "getUsers", "getUser", "updateUser");
+    user.rights.push(
+      "createUser",
+      "getUsers",
+      "getUser",
+      "updateUser",
+      "deleteUser"
+    );
     adminUser = await User.create(user);
     const token = signToken(adminUser.user_id);
     header = "Bearer " + token;
@@ -174,6 +180,20 @@ describe("UserController_Tests", () => {
       Object.keys(updatedUser).forEach((el) => {
         expect(updatedUser).toHaveProperty(el, returnUser[el]);
       });
+    });
+  });
+  describe("DELETE /api/v1/users/:id", () => {
+    it("Test_DeleteUser It should return 404 for user not found", async () => {
+      // 1. Generate random numbers as id
+      const id = RandomVal.GenRandomInteger(MAX);
+
+      // 2. Send request
+      const res = await request(server)
+        .delete(`/api/v1/users/${id}`)
+        .set("Authorization", header);
+
+      // 3. Expect results
+      expect(res.status).toBe(404);
     });
   });
 });
