@@ -19,6 +19,28 @@ const excludes = [
   "rights",
 ];
 
+const getMonthlyTariff = (amount) => {
+  if (amount > 3500 && amount <= 20000) {
+    return 450;
+  }
+  if (amount > 20001 && amount <= 40000) {
+    return 800;
+  }
+  if (amount > 40001 && amount <= 60000) {
+    return 1150;
+  }
+  if (amount > 60001 && amount <= 80000) {
+    return 1500;
+  }
+  if (amount > 80001 && amount <= 100000) {
+    return 1900;
+  }
+  if (amount > 100001) {
+    return 2300;
+  }
+  return 0;
+};
+
 export const creditMe = catchAsync(async (req, res, next) => {
   // 1. Get user
   const user = await User.findByPk(parseInt(req.user.user_id, 10));
@@ -66,14 +88,17 @@ export const creditUser = catchAsync(async (req, res, next) => {
       )
     );
   }
-  // 2. Get user
+  // 2. Get user and check if user is active
   const user = await User.findByPk(parseInt(user_id));
   if (!user) {
     return next(new AppError("No user found with this ID!", 404));
   }
-  const account = await user.getAccount();
+  if (!user.active) {
+    return next(new AppError("In active user!", 400));
+  }
 
-  // 3. Check if account is active
+  // 3. Get user account and check if account is active
+  const account = await user.getAccount();
   if (!account.active) {
     return next(new AppError("Can't perform action, Account closed!", 400));
   }
@@ -99,7 +124,7 @@ export const deposit = catchAsync(async (req, res, next) => {
   // 2. Get current user
   const currentUser = await User.findByPk(parseInt(req.user.user_id, 10));
 
-  // 3. Get customer account
+  // 3. Get current user account
   const currentAccount = await currentUser.getAccount();
 
   if (currentAccount.balance < amount) {
@@ -119,14 +144,14 @@ export const deposit = catchAsync(async (req, res, next) => {
   // TODO: What if the account is closed
   // 3. Check if account is active
   if (!account.active) {
-    return next(new AppError("Account close!", 400));
+    return next(new AppError("Account closed!", 400));
   }
   // Make sure we are depositing into a customer account
   if (account.type !== "customer") {
     return next(new AppError("Not a customer account!", 400));
   }
 
-  if (amount < 500 || amount > 1000000) {
+  if (amount < 500) {
     return next(new AppError(`Invalid amount! Amount: ${amount} FCFA`, 400));
   }
   account.balance += amount;
@@ -139,6 +164,10 @@ export const deposit = catchAsync(async (req, res, next) => {
     account_id: account.account_id,
     balance: account.balance,
   });
+
+  if (!transaction) {
+    return next(new AppError("Something went wrong!", 500));
+  }
 
   // Save results of transaction
   await currentAccount.save();
@@ -173,14 +202,14 @@ export const withdraw = catchAsync(async (req, res, next) => {
   }
 
   // 4. Calculate the amount
-  let amt = (amount * 5) / 100;
-  let totalAmount = amt + amount;
+  let tariff = getMonthlyTariff(account.balance);
+  let totalAmount = tariff + amount;
   if (totalAmount > account.balance) {
     return next(
       new AppError(`Insufficient amount! Balance: ${account.balance} FCFA`, 400)
     );
   }
-  account.balance -= totalAmount;
+  account.balance -= amount;
 
   const transaction = await Transaction.create({
     type: "withdrawal",
@@ -189,6 +218,10 @@ export const withdraw = catchAsync(async (req, res, next) => {
     account_id: account.account_id,
     balance: account.balance,
   });
+
+  if (!transaction) {
+    return next(new AppError("Error performing transaction!", 500));
+  }
 
   await account.save(); // save result
 
@@ -255,9 +288,7 @@ export const deleteTransaction = catchAsync(async (req, res, next) => {
     userAccount.balance += transaction.amount;
     customerAccount.balance -= transaction.amount;
   } else if (transaction.type === "withdrawal") {
-    let amt = (transaction.amount * 5) / 100; // add charges back to transaction
-    let totalAmount = amt + transaction.amount;
-    customerAccount.balance += totalAmount;
+    customerAccount.balance += transaction.amount;
   } else {
     return next(new AppError("Transaction not found!", 404));
   }
@@ -286,15 +317,42 @@ export const deleteTransaction = catchAsync(async (req, res, next) => {
 });
 
 export const sumTransactions = catchAsync(async (req, res, next) => {
-  const sum = await Transaction.sum("amount", { where: req.body });
-  const count = await Transaction.count({ where: req.body });
+  // 1. Build the date
+  const date = new Date();
+  const startDate =
+    date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + "01";
+  const endDate = date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + "31";
+
+  // 2. Get account
+  const account = await Account.findByPk(parseInt(req.params.id, 10));
+  if (!account) {
+    return next(new AppError("No account found with this ID!", 404));
+  }
+
+  // 3. Get the sum deposit for the current month for account
+  const sum = await Transaction.sum("amount", {
+    where: {
+      [Op.and]: [
+        { account_id: req.params.id },
+        { type: "deposit" },
+        { date: { [Op.between]: [startDate, endDate] } },
+      ],
+    },
+  });
+
+  // 4. Deduct tariff from the persons account
+  const tariff = getMonthlyTariff(sum);
+  account.balance -= tariff;
+
+  await account.save();
 
   // SEND RESPONSE
   res.status(200).json({
     status: "success",
     data: {
       sum,
-      count,
+      tariff,
+      balance: account.balance,
     },
   });
 });
