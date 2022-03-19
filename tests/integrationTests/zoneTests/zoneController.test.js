@@ -192,5 +192,17 @@ describe("ZoneController_Tests", () => {
       // 3. Expect result
       expect(res.status).toBe(404);
     });
+    it("Test_DeleteZone It return 204 successful zone delete", async () => {
+      // 1. Generate random valid zone
+      const genZone = UnitTest.GenRandomValidZone(adminUser.user_id);
+      // 2. Populate table with zone
+      const zone = await Zone.create(genZone);
+      // 3. Send request
+      const res = await request(server)
+        .delete(`/api/v1/zone/${zone.zone_id}`)
+        .set("Authorization", header);
+      // 5. Expect result
+      expect(res.status).toBe(204);
+    });
   });
 });
