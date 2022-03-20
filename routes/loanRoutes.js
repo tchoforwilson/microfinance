@@ -7,9 +7,12 @@ const router = express.Router();
 
 router.use(authController.protect);
 
-router.use("/").get(loanController.getAllLoans).post(loanController.createLoan);
 router
-  .use("/:id")
+  .route("/")
+  .get(loanController.getAllLoans)
+  .post(loanController.createLoan);
+router
+  .route("/:id")
   .get(loanController.getLoan)
   .patch(loanController.updateLoan)
   .delete(loanController.deleteLoan);
