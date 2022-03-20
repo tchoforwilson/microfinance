@@ -19,3 +19,5 @@ router
 router.route("/prepayment").post(loanController.prepayment);
 // 2. For loan recovery
 //router.route("/prepayment").post(loanController.prepayment);
+
+export default router;

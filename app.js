@@ -8,6 +8,7 @@ import zoneRouter from "./routes/zoneRoutes.js";
 import customerRouter from "./routes/customerRoutes.js";
 import sourceRouter from "./routes/sourceRoutes.js";
 import transactionRouter from "./routes/transactionRoutes.js";
+import loanRouter from "./routes/loanRoutes.js";
 import AppError from "./utils/appError.js";
 import globalErrorHandler from "./controllers/errorController.js";
 const app = express();
@@ -25,10 +26,11 @@ app.use(cookieParser());
 // ROUTES
 app.use("/api/v1/session", sessionRouter);
 app.use("/api/v1/users", userRouter);
-app.use("/api/v1/zone", zoneRouter);
+app.use("/api/v1/zones", zoneRouter);
 app.use("/api/v1/customers", customerRouter);
-app.use("/api/v1/source", sourceRouter);
+app.use("/api/v1/sources", sourceRouter);
 app.use("/api/v1/transaction", transactionRouter);
+app.use("/api/v1/loans", loanRouter);
 // INVALID ROUTES
 app.all("*", (req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
