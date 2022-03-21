@@ -7,6 +7,19 @@ const router = express.Router();
 
 router.use(authController.protect);
 
+// Other route
+// 1. For prepayment
+router
+  .route("/prepayment")
+  .patch(loanController.setLoanId, loanController.prepayment);
+// 2. For loan recovery
+router
+  .route("/recover")
+  .patch(loanController.setLoanId, loanController.recover);
+
+// 3. Sum all the unpaid loans
+router.route("/sumUnpaidLoan").get(loanController.getSumUnPaidLoan);
+
 router
   .route("/")
   .get(loanController.getAllLoans)
@@ -16,11 +29,4 @@ router
   .get(loanController.getLoan)
   .patch(loanController.updateLoan)
   .delete(loanController.deleteLoan);
-
-// Other route
-// 1. For prepayment
-router.route("/prepayment").post(loanController.prepayment);
-// 2. For loan recovery
-//router.route("/prepayment").post(loanController.prepayment);
-
 export default router;
