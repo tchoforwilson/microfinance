@@ -26,7 +26,7 @@ export default (sequelize, DataTypes) => {
     },
     status: {
       type: DataTypes.ENUM,
-      values: ["paid", "unpaid", "remainder"],
+      values: ["paid", "unpaid", "unfinished"],
       defaultValue: "unpaid",
     },
     date: {
