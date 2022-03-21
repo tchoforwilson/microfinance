@@ -8,6 +8,7 @@ import Account from "../models/accountModel.js";
 import Zone from "./../models/zoneModel.js";
 import Source from "./../models/sourceModel.js";
 import Transaction from "./../models/transactionModel.js";
+import Loan from "./../models/loanModel.js";
 
 // Configuring database connection
 const sequelize = new Sequelize(config.database, config.user, config.password, {
@@ -36,6 +37,7 @@ database.account = Account(sequelize, DataTypes);
 database.zone = Zone(sequelize, DataTypes);
 database.source = Source(sequelize, DataTypes);
 database.transaction = Transaction(sequelize, DataTypes);
+database.loan = Loan(sequelize, DataTypes);
 
 /**********************************/
 /********DEFINE ASSOCIATIONS******/
@@ -117,8 +119,29 @@ database.user.hasMany(database.transaction, {
     type: Sequelize.INTEGER,
     name: "user_id",
     allowNull: false,
+    validate: {
+      notNull: {
+        msg: "Transaction must involve a customer!",
+      },
+    },
   },
 });
 database.transaction.belongsTo(database.user);
+
+// H) CUSTOMER AND LOAN
+/*customer id in loan table*/
+database.customer.hasOne(database.loan, {
+  foreignKey: {
+    type: Sequelize.INTEGER,
+    name: "customer_id",
+    allowNull: false,
+    validate: {
+      notNull: {
+        msg: "Loan must belong to  customer!",
+      },
+    },
+  },
+});
+database.loan.belongsTo(database.customer);
 
 export default database;
