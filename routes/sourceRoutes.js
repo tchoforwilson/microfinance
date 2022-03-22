@@ -8,8 +8,8 @@ const router = express.Router();
 router.use(authController.protect);
 router.use(authController.restrictTo("manager", "accountant"));
 
-// router.route("/daily-source").get();
-// router.route("/monthly-source/:year").get()
+router.route("/daily-source").get(sourceController.getTotalSourceSumToday);
+router.route("/monthly-source/").get(sourceController.getTotalSourceSumMonth);
 // router.route("/yearly-source").get()
 
 router
