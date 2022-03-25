@@ -32,116 +32,11 @@ database.sequelize = sequelize;
 /**********************************/
 database.session = Session(sequelize, DataTypes);
 database.user = User(sequelize, DataTypes);
+database.zone = Zone(sequelize, DataTypes);
 database.customer = Customer(sequelize, DataTypes);
 database.account = Account(sequelize, DataTypes);
-database.zone = Zone(sequelize, DataTypes);
 database.source = Source(sequelize, DataTypes);
 database.transaction = Transaction(sequelize, DataTypes);
 database.loan = Loan(sequelize, DataTypes);
-
-/**********************************/
-/********DEFINE ASSOCIATIONS******/
-/**********************************/
-
-// A)USER and ZONE
-/*user id in zone table*/
-database.user.hasMany(database.zone, {
-  foreignKey: {
-    type: Sequelize.INTEGER,
-    name: "user_id",
-    allowNull: true,
-  },
-});
-database.zone.belongsTo(database.user);
-
-// B) ACCOUNT and USER
-/*user id in account table*/
-database.user.hasOne(database.account, {
-  foreignKey: {
-    type: Sequelize.INTEGER,
-    name: "user_id",
-  },
-});
-database.account.belongsTo(database.user);
-
-// C) CUSTOMER AND ACCOUNT
-/*customer id in account table*/
-database.customer.hasMany(database.account, {
-  foreignKey: {
-    type: Sequelize.INTEGER,
-    name: "customer_id",
-  },
-});
-database.account.belongsTo(database.customer);
-
-// D) ZONE AND CUSTOMER
-/*zone id in customer table*/
-database.zone.hasMany(database.customer, {
-  foreignKey: {
-    type: Sequelize.INTEGER,
-    name: "zone_id",
-    allowNull: false,
-    validate: {
-      notNull: {
-        msg: "Customer zone required!",
-      },
-    },
-  },
-});
-database.customer.belongsTo(database.zone);
-
-// E) ZONE and SOURCE
-/*zone id in source table*/
-database.zone.hasOne(database.source);
-database.source.belongsTo(database.zone, {
-  foreignKey: {
-    type: Sequelize.INTEGER,
-    name: "zone_id",
-    allowNull: false,
-  },
-});
-
-// F) TRANSACTION AND ACCOUNT
-/*user id in transaction table*/
-database.account.hasMany(database.transaction, {
-  foreignKey: {
-    type: Sequelize.INTEGER,
-    name: "account_id",
-    allowNull: false,
-  },
-});
-database.transaction.belongsTo(database.account);
-
-// G) TRANSACTION AND USER
-/*user id in transaction table*/
-database.user.hasMany(database.transaction, {
-  foreignKey: {
-    type: Sequelize.INTEGER,
-    name: "user_id",
-    allowNull: false,
-    validate: {
-      notNull: {
-        msg: "Transaction must involve a customer!",
-      },
-    },
-  },
-});
-database.transaction.belongsTo(database.user);
-
-// H) CUSTOMER AND LOAN
-/*customer id in loan table*/
-database.customer.hasOne(database.loan, {
-  foreignKey: {
-    type: Sequelize.INTEGER,
-    name: "customer_id",
-    allowNull: false,
-    validate: {
-      notNull: {
-        msg: "Loan must belong to  customer!",
-      },
-    },
-  },
-});
-database.loan.belongsTo(database.customer);
 
 export default database;

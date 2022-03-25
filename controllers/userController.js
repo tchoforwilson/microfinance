@@ -1,10 +1,35 @@
 "use strict";
 import AppError from "./../utils/appError.js";
 import catchAsync from "./../utils/catchAsync.js";
-import * as factory from "./../controllers/handleFactory.js";
+import * as factory from "./../controllers/handlerFactory.js";
 import database from "./../config/database.js";
 const User = database.user;
 const Account = database.account;
+
+// fields to be excluded from query
+const excludedFields = [
+  "password",
+  "passwordConfirm",
+  "active",
+  "passwordChangedAt",
+  "createdAt",
+  "updatedAt",
+];
+
+// fields to be updated in an update
+const fields = [
+  "firstname",
+  "lastname",
+  "gender",
+  "contact",
+  "email",
+  "address",
+  "role",
+  "rights",
+  "photo",
+  "identity",
+  "active",
+];
 
 /**
  * Filter an object by selecting the provide fields
@@ -21,7 +46,12 @@ const filterObj = (obj, ...allowedFields) => {
 };
 
 export const getMe = (req, res, next) => {
-  req.params.id = req.user.user_id;
+  req.params.id = req.user.id;
+  next();
+};
+
+export const setUserId = (req, res, next) => {
+  if (!req.body.user) req.body.user = req.params.id;
   next();
 };
 
@@ -42,23 +72,17 @@ export const updateMe = catchAsync(async (req, res, next) => {
     "firstname",
     "lastname",
     "contact",
+    "gender",
     "email",
     "address",
-    "account_name"
+    "rights"
   );
   if (req.file) filteredBody.photo = req.file.filename;
 
   // 3) Update user document
   let updatedUser = await User.update(filteredBody, {
-    where: { user_id: req.user.user_id },
+    where: { id: req.user.id },
   });
-
-  // 6. Set user account
-  if (filteredBody.account_name) {
-    updatedUser = await Account.update(filteredBody, {
-      where: { user_id: req.user.user_id },
-    });
-  }
 
   res.status(200).json({
     status: "success",
@@ -68,8 +92,35 @@ export const updateMe = catchAsync(async (req, res, next) => {
   });
 });
 
-export const createUser = factory.createOne(User, "user");
-export const getUser = factory.getOne(User, "user");
-export const getUsers = factory.getAll(User);
-export const updateUser = factory.updateOne(User, "user");
-export const deleteUser = factory.deleteOne(User, "user");
+export const createUser = factory.createOne(User, ...fields);
+export const getUser = factory.getOne(User, ...excludedFields);
+export const getAllUsers = factory.getAll(User);
+export const updateUser = factory.updateOne(User, fields);
+export const deleteUser = factory.deleteOne(User);
+
+export const addUserAccount = catchAsync(async (req, res, next) => {
+  // 1. Get user id and account name
+  const { name, user } = req.body;
+
+  // 2. Check if user exist
+  const doc = await User.findByPk(user);
+  if (!doc) {
+    return next(new AppError("User not found!", 404));
+  }
+
+  // 3. Check that user is neither accountant nor Manager
+  if (doc.role === "manager" || doc.role === "accountant") {
+    return next(new AppError("Can add account for manager or accountant", 400));
+  }
+
+  // 4. Create account
+  const account = await Account.create({ name, user });
+
+  res.status(200).json({
+    status: "success",
+    data: {
+      account,
+    },
+  });
+});
+export const closeAccount = factory.closeAccount(Account);

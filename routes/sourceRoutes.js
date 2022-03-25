@@ -15,7 +15,7 @@ router.route("/monthly-source/").get(sourceController.getTotalSourceSumMonth);
 router
   .route("/")
   .post(sourceController.createSource)
-  .get(sourceController.getTopSources, sourceController.getSources);
+  .get(sourceController.getTopSources, sourceController.getAllSources);
 router
   .route("/:id")
   .get(sourceController.getSource)

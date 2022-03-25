@@ -6,6 +6,7 @@ import AppError from "./../utils/appError.js";
 import catchAsync from "./../utils/catchAsync.js";
 import database from "./../config/database.js";
 const User = database.user;
+const Account = database.account;
 const Op = database.Sequelize.Op;
 
 /**
@@ -20,13 +21,30 @@ const signToken = (id) => {
 };
 
 /**
+ * Get user account,
+ * If user role is a manage or account, then the account is the source account
+ * Else if it is a collector, then account is a collector{user} account
+ * @param {Object} user
+ * @returns {Object} account
+ */
+const getUserAccount = async (user) => {
+  let account = null;
+  if (user.role === "manager" || user.role === "accountant") {
+    account = await Account.findOne({ where: { type: "source" } });
+  } else {
+    account = await Account.findOne({ where: { user: user.id } });
+  }
+  return account;
+};
+
+/**
  * Create the and send the generated token to the user when login
  * @param {Object} user  -> user from which token will be generated
  * @param {Number} statusCode  -> Response status code
  * @param {Object} res  -> Response
  */
 const createSendToken = (user, statusCode, res) => {
-  const token = signToken(user.user_id);
+  const token = signToken(user.id);
   const cookieOptions = {
     expires: new Date(
       Date.now() * process.env.JWT_COOKIE_EXPIRES_IN * 60 * 60 * 1000
@@ -71,7 +89,7 @@ export const signup = catchAsync(async (req, res, next) => {
       [Op.or]: [{ email }, { contact: email }],
     },
     attributes: [
-      "user_id",
+      "id",
       "firstname",
       "lastname",
       "gender",
@@ -101,8 +119,12 @@ export const signup = catchAsync(async (req, res, next) => {
   user.password = await bcrypt.hash(password, 12);
   user.password_confirm = user.password;
 
-  // Get user address and Account details
-  const account = await user.getAccount();
+  /**
+   * Get user account,
+   * If user role is a manage or account, then the account is the source account
+   * Else if it is a collector, then account is a collector{user} account
+   */
+  const account = await getUserAccount(user);
   userData = { ...userData, account };
 
   // Save user password
@@ -146,9 +168,7 @@ export const signin = catchAsync(async (req, res, next) => {
     return next(new AppError("Incorrect email or password", 401));
   }
 
-  // 3) If everything ok, send token to client
-  // Get user Account details
-  const account = await user.getAccount();
+  const account = await getUserAccount(userData);
   userData = { ...userData, account };
   createSendToken(userData, 200, res);
 });
@@ -189,7 +209,7 @@ export const protect = catchAsync(async (req, res, next) => {
   // 3) Check if user still exists
   const currentUser = await User.findByPk(decoded.id, {
     attributes: [
-      "user_id",
+      "id",
       "firstname",
       "lastname",
       "email",
@@ -202,8 +222,9 @@ export const protect = catchAsync(async (req, res, next) => {
   if (!currentUser) {
     return next(new AppError("User doesn't exist!", 404));
   }
-  currentUser.account = await currentUser.getAccount();
-  currentUser.zones = await currentUser.getZones();
+  currentUser.account = await getUserAccount(currentUser);
+  //TODO: Do we need to get the user zone here?
+  //currentUser.zones = await currentUser.getZones();
 
   // 4) Check if user changed password after the token was issued
   if (changedPasswordAfter(decoded.iat, currentUser)) {
@@ -223,7 +244,7 @@ export const updateMyPassword = catchAsync(async (req, res, next) => {
   const { currentPassword, password, passwordConfirm } = req.body;
 
   // 2. Check passwords
-  const user = User.findByPk(parseInt(req.user.user_id, 10));
+  const user = User.findByPk(req.user.id);
 
   // 3. check password
   if (!correctPassword(currentPassword, user.password)) {
@@ -238,7 +259,7 @@ export const updateMyPassword = catchAsync(async (req, res, next) => {
   }
   // 5. Update user passwords
   user.password = await bcrypt.hash(password, 12);
-  user.password_confirm = user.password;
+  user.passwordConfirm = user.password;
   // save new password
   await user.save();
 

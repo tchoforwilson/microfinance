@@ -1,7 +1,7 @@
 "use strict";
 export default (sequelize, DataTypes) => {
   const User = sequelize.define("user", {
-    user_id: {
+    id: {
       type: DataTypes.INTEGER,
       autoIncrement: true,
       primaryKey: true,
@@ -33,11 +33,17 @@ export default (sequelize, DataTypes) => {
         },
       },
     },
+    fullname: {
+      type: DataTypes.VIRTUAL,
+      get() {
+        return `${this.firstname} ${this.lastname}`;
+      },
+    },
     gender: {
       type: DataTypes.ENUM,
       values: ["male", "female"],
     },
-    identity_number: {
+    identity: {
       type: DataTypes.STRING(9),
       allowNull: false,
       unique: true,
@@ -60,7 +66,7 @@ export default (sequelize, DataTypes) => {
         notNull: {
           msg: "Please provide user contact",
         },
-        len: 13,
+        len: [9, 13],
       },
     },
     email: {
@@ -111,7 +117,7 @@ export default (sequelize, DataTypes) => {
         max: 12,
       },
     },
-    password_confirm: {
+    passwordConfirm: {
       type: DataTypes.STRING,
       allowNull: true,
       validate: {
@@ -122,7 +128,7 @@ export default (sequelize, DataTypes) => {
         },
       },
     },
-    password_changed_at: {
+    passwordChangedAt: {
       type: DataTypes.DATE,
     },
     active: {

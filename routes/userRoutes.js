@@ -1,5 +1,6 @@
 "use strict";
 import { Router } from "express";
+import zoneRouter from "./zoneRoutes.js";
 import * as authController from "./../controllers/authController.js";
 import * as userController from "./../controllers/userController.js";
 
@@ -11,22 +12,32 @@ router.get("/logout", authController.logout);
 
 // Protect all routes after this middleware
 router.use(authController.protect);
+
+// GET /users/1/zones
+router.use("/:userId/zones", zoneRouter);
+
 router.patch("/updateMyPassword", authController.updateMyPassword);
 router.get("/me", userController.getMe, userController.getUser);
-//router.patch("/updateMe", userController.updateMe);
 router
   .route("/updateMe")
   .patch(authController.restrictTo("manager"), userController.updateMe);
 
-//router.use(authController.restrictTo("manager"));
+// RESTRICT ALL ROUTES AFTER THIS TO MANAGER AND ACCOUNTANT
+router.use(authController.restrictTo("manager", "accountant"));
+
+router.post(
+  "/addAccount",
+  userController.setUserId,
+  userController.addUserAccount
+);
 router
   .route("/")
-  .post(authController.hasRight("createUser"), userController.createUser)
-  .get(authController.hasRight("getUsers"), userController.getUsers);
+  .post(userController.createUser)
+  .get(userController.getAllUsers);
 router
   .route("/:id")
-  .get(authController.hasRight("getUser"), userController.getUser)
-  .patch(authController.hasRight("updateUser"), userController.updateUser)
-  .delete(authController.hasRight("deleteUser"), userController.deleteUser);
+  .get(userController.getUser)
+  .patch(userController.updateUser)
+  .delete(userController.deleteUser);
 
 export default router;

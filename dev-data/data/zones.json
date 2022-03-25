@@ -1,0 +1,52 @@
+{
+  "zones": [
+    {
+      "id": 1,
+      "name": "Zone A",
+      "description": "lorep ispsum dolor ip na ba",
+      "longitude": -40,
+      "latitude": -120,
+      "user_id": 3
+    },
+    {
+      "id": 2,
+      "name": "Zone B",
+      "description": "lorep ispsum dolor ip na ba",
+      "longitude": -20,
+      "latitude": -110,
+      "user_id": 3
+    },
+    {
+      "id": 3,
+      "name": "Zone C",
+      "description": "lorep ispsum dolor ip na ba",
+      "longitude": -80,
+      "latitude": -13.93,
+      "user_id": 3
+    },
+    {
+      "id": 4,
+      "name": "Zone D",
+      "description": "lorep ispsum dolor ip na ba",
+      "longitude": -4.98,
+      "latitude": -120.8949,
+      "user_id": 4
+    },
+    {
+      "id": 5,
+      "name": "Zone E",
+      "description": "lorep ispsum dolor ip na ba",
+      "longitude": -45.98,
+      "latitude": -40.8949,
+      "user_id": 4
+    },
+    {
+      "id": 6,
+      "name": "Zone F",
+      "description": "lorep ispsum dolor ip na ba",
+      "longitude": 40.98,
+      "latitude": 150.8949,
+      "user_id": 6
+    }
+  ]
+}

@@ -156,7 +156,7 @@
     "start": "nodemon server.js",
     "start:prod": "NODE_ENV=production nodemon index.js",
     "start:test": "NODE_ENV=test nodemon index.js",
-    "debug": "ndb index.js"
+    "debug": "ndb"
   },
   "author": "tchofor wilson",
   "license": "ISC",

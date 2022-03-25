@@ -1,6 +1,6 @@
 export default (sequelize, DataTypes) => {
   const Loan = sequelize.define("loan", {
-    loan_id: {
+    id: {
       type: DataTypes.INTEGER,
       autoIncrement: true,
       primaryKey: true,
@@ -22,6 +22,13 @@ export default (sequelize, DataTypes) => {
           args: false,
           msg: "Invalid non-numeric balance!",
         },
+      },
+    },
+    customer: {
+      type: DataTypes.INTEGER,
+      references: {
+        model: "customers",
+        key: "id",
       },
     },
     status: {

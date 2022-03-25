@@ -1,7 +1,7 @@
 "use strict";
 export default (sequelize, DataTypes) => {
   const Zone = sequelize.define("zone", {
-    zone_id: {
+    id: {
       type: DataTypes.INTEGER,
       autoIncrement: true,
       primaryKey: true,
@@ -33,6 +33,17 @@ export default (sequelize, DataTypes) => {
         min: -180,
         max: 180,
       },
+    },
+    user: {
+      type: DataTypes.INTEGER,
+      references: {
+        model: "users",
+        key: "id",
+      },
+    },
+    active: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: true,
     },
   });
   return Zone;

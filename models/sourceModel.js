@@ -1,6 +1,6 @@
 export default (sequelize, DataTypes) => {
   const Source = sequelize.define("source", {
-    source_id: {
+    id: {
       type: DataTypes.INTEGER,
       autoIncrement: true,
       primaryKey: true,
@@ -22,9 +22,12 @@ export default (sequelize, DataTypes) => {
         },
       },
     },
-    balance: {
+    zone: {
       type: DataTypes.INTEGER,
-      defaultValue: 0,
+      references: {
+        model: "zones",
+        key: "id",
+      },
     },
   });
   return Source;

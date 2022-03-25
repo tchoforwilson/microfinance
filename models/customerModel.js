@@ -1,6 +1,6 @@
 export default (sequelize, DataTypes) => {
   const Customer = sequelize.define("customer", {
-    customer_id: {
+    id: {
       type: DataTypes.INTEGER,
       autoIncrement: true,
       primaryKey: true,
@@ -36,7 +36,7 @@ export default (sequelize, DataTypes) => {
       type: DataTypes.ENUM,
       values: ["male", "female"],
     },
-    identity_number: {
+    identity: {
       type: DataTypes.STRING(9),
       allowNull: false,
       unique: true,
@@ -48,7 +48,7 @@ export default (sequelize, DataTypes) => {
           args: true,
           msg: "Invalid identity number!",
         },
-        len: 9,
+        len: [9, 13],
       },
     },
     contact: {
@@ -82,6 +82,17 @@ export default (sequelize, DataTypes) => {
           msg: "Please provide customer address!",
         },
       },
+    },
+    zone: {
+      type: DataTypes.INTEGER,
+      references: {
+        model: "zones",
+        key: "id",
+      },
+    },
+    active: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: true,
     },
   });
   return Customer;

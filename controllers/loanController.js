@@ -2,41 +2,29 @@
 import AppError from "./../utils/appError.js";
 import catchAsync from "./../utils/catchAsync.js";
 import database from "./../config/database.js";
+import * as factory from "./handlerFactory.js";
 
 const Loan = database.loan;
 const Customer = database.customer;
 const Account = database.account;
 const Op = database.Sequelize.Op;
 
-export const setLoanId = (req, res, next) => {
-  if (!req.body.loan_id) req.body.loan_id = req.params.loan_id;
-  next();
-};
+// fields to be considered when performing create or update
+const fields = ["amount", "customer"];
 
-export const getAllLoans = catchAsync(async (req, res, next) => {
-  const loans = await Loan.findAndCountAll({
-    where: req.query,
-  });
-  if (!loans) {
-    return next(new AppError("No loan found", 404));
-  }
-  res.status(200).json({
-    status: "success",
-    data: {
-      loans,
-    },
-  });
-});
+// fields to exclude during query
+const excludedFields = ["createdAt", "updatedAt"];
 
 export const createLoan = catchAsync(async (req, res, next) => {
   // 1. Get data
-  const { amount, interestRate, customer_id } = req.body;
+  const { amount, interestRate, customer } = req.body;
+
   // 2. Check if customer exist and is active
-  const customer = await Customer.findByPk(parseInt(customer_id));
-  //TODO: This 👇 should be a future check
-  // if (!customer.active) {
-  //   return next(new AppError("Customer inactive!", 404));
-  // }
+  const currentCustomer = await Customer.findByPk(customer);
+  if (!currentCustomer.active) {
+    return next(new AppError("Customer inactive!", 404));
+  }
+
   // 3. Make sure amount is not less than zero
   if (amount < 500 || amount > 1000000) {
     return next(
@@ -57,7 +45,7 @@ export const createLoan = catchAsync(async (req, res, next) => {
   const loan = await Loan.create({
     amount: totalAmount,
     balance: totalAmount,
-    customer_id,
+    customer: currentCustomer.id,
   });
   const loanData = loan.dataValues;
 
@@ -66,47 +54,18 @@ export const createLoan = catchAsync(async (req, res, next) => {
     status: "success",
     data: {
       loan: loanData,
-      customer,
+      currentCustomer,
     },
   });
 });
 
-export const getLoan = catchAsync(async (req, res, next) => {
-  const loan = await Loan.findByPk(req.params.id);
-  if (!loan) {
-    return next(new AppError("No loan found with this ID!", 404));
-  }
-
-  res.status(200).json({
-    status: "success",
-    data: {
-      loan,
-    },
-  });
-});
-
-export const updateLoan = catchAsync(async (req, res, next) => {
-  const loan = Loan.update(req.body, {
-    where: { loan_id: parseInt(req.params.id, 10) },
-    fields: ["amount", "customer_id", "status"],
-  });
-
-  // 2. Check if there was an update
-  if (loan[0] === 0) {
-    return next(new AppError("No loan found with this ID!", 404));
-  }
-
-  // SEND RESPONSE
-
-  res.status(204).json({
-    status: "success",
-    data: null,
-  });
-});
+export const getAllLoans = factory.getAll(Loan);
+export const getLoan = factory.getOne(Loan, excludedFields);
+export const updateLoan = factory.updateOne(Loan, fields);
 
 export const deleteLoan = catchAsync(async (req, res, next) => {
   // 1. Get loan
-  const loan = await Loan.findByPk(parseInt(req.params.id, 10));
+  const loan = await Loan.findByPk(req.params.id);
 
   // 2. Check if loan exist
   if (!loan) {
@@ -119,7 +78,7 @@ export const deleteLoan = catchAsync(async (req, res, next) => {
   }
 
   // 4. Delete loan
-  await Loan.destroy({ where: { loan_id: parseInt(req.params.id, 10) } });
+  await Loan.destroy({ where: { id: req.params.id } });
 
   // SEND RESPONSE
   res.status(200).json({
@@ -136,10 +95,10 @@ export const deleteLoan = catchAsync(async (req, res, next) => {
  */
 export const prepayment = catchAsync(async (req, res, next) => {
   // 1. Get loan id and prepaid amount
-  const { loan_id, amount } = req.body;
+  const { id, amount } = req.body;
 
   // 2. Get for loan
-  const loan = await Loan.findByPk(parseInt(loan_id, 10));
+  const loan = await Loan.findByPk(id);
 
   // 3. Check if loan exist
   if (!loan) {
@@ -181,11 +140,11 @@ export const prepayment = catchAsync(async (req, res, next) => {
  */
 
 export const recover = catchAsync(async (req, res, next) => {
-  // 1. Get loan_id, account_id and amount
-  const { loan_id, account_id, amount } = req.body;
+  // 1. Get loan id, account id and amount
+  const { id, account, amount } = req.body;
 
   // 2. Get loan
-  const loan = await Loan.findByPk(loan_id);
+  const loan = await Loan.findByPk(id);
 
   // 3. Check if loan exist
   if (!loan) {
@@ -197,36 +156,36 @@ export const recover = catchAsync(async (req, res, next) => {
     return next(new AppError("Loan is paid!", 400));
   }
   // 5. Get account
-  const account = await Account.findByPk(account_id);
+  const customerAccount = await Account.findByPk(account);
 
   // 6. Check if the account exist
-  if (!account) {
+  if (!customerAccount) {
     return next(new AppError("No account found with this ID!", 404));
   }
   // 7. Check if account is an active account
-  if (!account.active) {
+  if (!customerAccount.active) {
     return next(new AppError("This account is closed!", 400));
   }
   // 8. Check if account belongs to customer
-  if (loan.customer_id !== account.customer_id) {
+  if (loan.customer !== account.customer) {
     return next(
       new AppError("This account doesn't belongs to the customer!", 400)
     );
   }
   // 9. Check that the account balance is greater than or equal the amount
-  if (account.balance < amount) {
+  if (customerAccount.balance < amount) {
     return next(new AppError(`Insufficient funds! ${account.balance}`, 400));
   }
 
   // 10. Perform recovery
-  account.balance -= amount; // subtract amount from account balance
+  customerAccount.balance -= amount; // subtract amount from account balance
   loan.balance -= amount; // subtract amount from loan balance
 
   // 11. Verify if loan is all paid
   loan.balance === 0 ? (loan.status = "paid") : (loan.status = "unfinished");
 
   // 12. Save result
-  await account.save();
+  await customerAccount.save();
   await loan.save();
 
   // SEND RESPONSE

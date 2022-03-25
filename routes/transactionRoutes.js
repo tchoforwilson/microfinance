@@ -7,42 +7,30 @@ const router = express.Router();
 
 router.use(authController.protect);
 
-// Credit a self
+// perform monthly tariff from user
 router
-  .route("/creditMe")
-  .post(
-    authController.restrictTo("manager", "accountant"),
-    transactionController.creditMe
+  .route("/performMonthlyTariff")
+  .get(
+    authController.restrictTo("manager"),
+    transactionController.performMonthlyTariff
   );
 
 // Credit user
 router
-  .route("/creditUser")
+  .route("/creditCollector")
   .post(
     authController.restrictTo("manager", "accountant"),
-    transactionController.creditUser
+    transactionController.creditCollector
   );
 
 // Deposit and Withdraw
 router.route("/deposit").post(transactionController.deposit);
 router.route("/withdraw").post(transactionController.withdraw);
 
-// Get all withdrawal
+// Get all transactions
 router.route("/").get(transactionController.getTransactions);
 
-router
-  .route("/:id")
-  .get(transactionController.getTransaction)
-  .delete(transactionController.deleteTransaction);
-
-// Statistical routes
-
-router
-  .route("/sum/:id")
-  .patch(
-    authController.restrictTo("manager"),
-    transactionController.sumTransactions
-  );
+router.route("/:id").get(transactionController.getTransaction);
 
 // /:userId/transactions
 // /:accountId/transactions

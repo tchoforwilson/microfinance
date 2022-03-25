@@ -1,49 +1,53 @@
 "use strict";
-import AppError from "./../utils/appError.js";
+import * as factory from "./handlerFactory.js";
 import catchAsync from "./../utils/catchAsync.js";
-import * as factory from "./handleFactory.js";
 import database from "./../config/database.js";
+
 const Customer = database.customer;
 const Account = database.account;
 
-export const createCustomer = factory.createOne(Customer, "customer");
-export const getCustomer = factory.getOne(Customer, "customer");
-export const getCustomers = factory.getAll(Customer);
-export const updateCustomer = factory.updateOne(Customer, "customer");
-export const deleteCustomer = factory.deleteOne(Customer, "customer");
+// fields to be excluded from query
+const excludedFields = ["createdAt", "updatedAt"];
 
-export const addAccount = catchAsync(async (req, res, next) => {
-  const account = await Account.create(req.body, {
-    fields: ["account_name", "customer_id"],
-  });
-  if (!account) {
-    return next(new AppError("Couldn't create account!", 400));
+// fields to be updated in an update
+const fields = [
+  "firstname",
+  "lastname",
+  "gender",
+  "contact",
+  "email",
+  "address",
+  "photo",
+  "identity",
+  "zone",
+  "active",
+];
+
+export const createCustomer = factory.createOne(Customer, ...fields);
+export const getCustomer = factory.getOne(Customer, ...excludedFields);
+export const getAllCustomers = factory.getAll(Customer);
+export const updateCustomer = factory.updateOne(Customer, ...fields);
+export const deleteCustomer = factory.deleteOne(Customer);
+
+export const addCustomerAccount = catchAsync(async (req, res, next) => {
+  // 1. Get customer id and account name
+  const { name, customer } = req.body;
+
+  // 2. Check if user exist
+  const doc = await Customer.findByPk(customer);
+  if (!doc) {
+    return next(new AppError("User not found!", 404));
   }
 
-  // SEND RESPONSE
-  res.status(201).json({
+  // 3. Create account
+  const account = await Account.create({ name, customer });
+
+  res.status(200).json({
     status: "success",
-    data: account,
+    data: {
+      account,
+    },
   });
 });
 
-export const closeAccount = catchAsync(async (req, res, next) => {
-  // 1. Find account
-  const account = await Account.findByPk(parseInt(req.params.id, 10));
-
-  // 2. Check if it exists
-  if (!account) {
-    return next(new AppError("No account found with this ID!", 404));
-  }
-
-  // 3. set to inactive
-  account.active = false;
-  account.date_closed = Date.now();
-  await account.save();
-
-  // SEND RESPONSE
-  res.status(201).json({
-    status: "success",
-    data: account,
-  });
-});
+export const closeAccount = factory.closeAccount(Account);

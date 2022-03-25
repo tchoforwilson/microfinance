@@ -1,11 +1,11 @@
 export default (sequelize, DataTypes) => {
   const Account = sequelize.define("account", {
-    account_id: {
+    id: {
       type: DataTypes.INTEGER,
       autoIncrement: true,
       primaryKey: true,
     },
-    account_name: {
+    name: {
       type: DataTypes.STRING(40),
     },
     type: {
@@ -22,16 +22,30 @@ export default (sequelize, DataTypes) => {
         },
       },
     },
-    active: {
-      type: DataTypes.BOOLEAN,
-      defaultValue: true,
+    user: {
+      type: DataTypes.INTEGER,
+      references: {
+        model: "users",
+        key: "id",
+      },
     },
-    date_opened: {
+    customer: {
+      type: DataTypes.INTEGER,
+      references: {
+        model: "customers",
+        key: "id",
+      },
+    },
+    dateOpened: {
       type: DataTypes.DATEONLY,
       defaultValue: Date.now(),
     },
-    date_closed: {
+    dateClosed: {
       type: DataTypes.DATEONLY,
+    },
+    active: {
+      type: DataTypes.BOOLEAN,
+      defaultValue: true,
     },
   });
   return Account;

@@ -1,36 +1,33 @@
 "use strict";
 import express from "express";
+import accountRouter from "./accountRoutes.js";
 import * as authController from "./../controllers/authController.js";
 import * as customerController from "../controllers/customerController.js";
 
 const router = express.Router({ mergeParams: true });
 
 router.use(authController.protect);
-router
-  .route("/")
-  .post(
-    authController.hasRight("createCustomer"),
-    customerController.createCustomer
-  )
-  .get(
-    authController.hasRight("getCustomers"),
-    customerController.getCustomers
-  );
-router
-  .route("/:id")
-  .get(authController.hasRight("getCustomer"), customerController.getCustomer)
-  .patch(
-    authController.hasRight("updateCustomer"),
-    customerController.updateCustomer
-  )
-  .delete(
-    authController.hasRight("deleteCustomer"),
-    customerController.deleteCustomer
-  );
+
+// GET /customer/1/accounts
+router.use("/:customerId/accounts", accountRouter);
+
+// GET A SINGLE CUSTOMER IS NOT RESTRICTED COLLECTOR
+router.route("/:id").get(customerController.getCustomer);
+
+router.use(authController.restrictTo("manager", "accountant"));
 
 // ADD A NEW CUSTOMER ACCOUNT
-router.post("/addAccount", customerController.addAccount);
+router.post("/addAccount", customerController.addCustomerAccount);
 // CLOSE CUSTOMER ACCOUNT
 router.patch("/closeAccount/:id", customerController.closeAccount);
+
+router
+  .route("/")
+  .post(customerController.createCustomer)
+  .get(customerController.getAllCustomers);
+router
+  .route("/:id")
+  .patch(customerController.updateCustomer)
+  .delete(customerController.deleteCustomer);
 
 export default router;

@@ -25,7 +25,7 @@ const DatabaseConfig = {
   database: DATABASE,
   dialect: process.env.DIALECT,
   pool: {
-    max: 5,
+    max: 8,
     min: 0,
     acquire: 30000,
     idle: 10000,

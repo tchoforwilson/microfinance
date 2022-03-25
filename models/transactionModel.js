@@ -1,6 +1,6 @@
 export default (sequelize, DataTypes) => {
   const Transaction = sequelize.define("transaction", {
-    transaction_id: {
+    id: {
       type: DataTypes.INTEGER,
       autoIncrement: true,
       primaryKey: true,
@@ -25,6 +25,13 @@ export default (sequelize, DataTypes) => {
         },
       },
     },
+    user: {
+      type: DataTypes.INTEGER,
+      references: {
+        model: "users",
+        key: "id",
+      },
+    },
     amount: {
       type: DataTypes.INTEGER,
       allowNull: false,
@@ -38,7 +45,18 @@ export default (sequelize, DataTypes) => {
         },
       },
     },
-    balance: {
+    account: {
+      type: DataTypes.INTEGER,
+      references: {
+        model: "accounts",
+        key: "id",
+      },
+    },
+    userBalance: {
+      type: DataTypes.INTEGER,
+      defaultValue: 0,
+    },
+    accountBalance: {
       type: DataTypes.INTEGER,
       defaultValue: 0,
     },

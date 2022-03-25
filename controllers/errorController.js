@@ -9,7 +9,19 @@ const handleDuplicateFieldsDB = (err) => {
   return new AppError(message, 400);
 };
 
-const handleDatabaseError = (err) => {};
+const handleForeignKeyError = (err) => {
+  let detail = err.parent.detail;
+  detail = detail.replace("Key", "");
+  detail = detail.replace("(", "");
+  detail = detail.replace(")", "");
+  detail = detail.replace("(", "");
+  detail = detail.replace(")", "");
+  detail = detail.replace(`\"`, "");
+  detail = detail.replace(`\"`, "");
+
+  const message = detail;
+  return new AppError(message, 400);
+};
 
 const handleValidationErrorDB = (err) => {
   const errors = Object.values(err.errors).map((el) => el.message);
@@ -89,6 +101,8 @@ export default (err, req, res, next) => {
     error.message = err.message;
     if (error.name === "SequelizeUniqueConstraintError")
       error = handleDuplicateFieldsDB(error);
+    if (error.name === "SequelizeForeignKeyConstraintError")
+      error = handleForeignKeyError(error);
     if (error.name === "SequelizeValidationError")
       error = handleValidationErrorDB(error);
     if (error.name === "SequelizeDatabaseError") error = handleDatabaseError();
