@@ -40,7 +40,7 @@ export const addCustomerAccount = catchAsync(async (req, res, next) => {
   }
 
   // 3. Create account
-  const account = await Account.create({ name, customer });
+  const account = await Account.create({ name, customer, type: "customer" });
 
   res.status(200).json({
     status: "success",

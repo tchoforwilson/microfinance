@@ -114,7 +114,7 @@ export const addUserAccount = catchAsync(async (req, res, next) => {
   }
 
   // 4. Create account
-  const account = await Account.create({ name, user });
+  const account = await Account.create({ name, user, type: "user" });
 
   res.status(200).json({
     status: "success",

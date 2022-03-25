@@ -56,15 +56,22 @@ export const creditCollector = catchAsync(async (req, res, next) => {
     return next(new AppError("In active user!", 400));
   }
 
-  // 4. Get user account and check if account is active
+  // 4. Check that user is a collector
+  if (user.role !== "collector") {
+    return next(
+      new AppError(`Invalid user selected with role ${user.role}`, 400)
+    );
+  }
+
+  // 5. Get user account and check if account is active
   const account = await Account.findOne({ where: { user: collector } });
 
-  // 5. Check if account is not closed
+  // 6. Check if account is not closed
   if (!account.active) {
     return next(new AppError("Can't perform action, Account closed!", 400));
   }
 
-  // 6. Credit user account with amount from source
+  // 7. Credit user account with amount from source
   account.balance += amount;
   req.user.account.balance -= amount;
   await req.user.account.save();
@@ -187,7 +194,7 @@ export const withdraw = catchAsync(async (req, res, next) => {
     return next(new AppError("Error performing transaction!", 500));
   }
 
-  await account.save(); // save result
+  await customerAccount.save(); // save result
 
   res.status(200).json({
     status: "success",
