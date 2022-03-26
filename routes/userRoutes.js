@@ -25,11 +25,7 @@ router
 // RESTRICT ALL ROUTES AFTER THIS TO MANAGER AND ACCOUNTANT
 router.use(authController.restrictTo("manager", "accountant"));
 
-router.post(
-  "/addAccount",
-  userController.setUserId,
-  userController.addUserAccount
-);
+router.post("/addAccount", userController.addUserAccount);
 router
   .route("/")
   .post(userController.createUser)
