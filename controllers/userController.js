@@ -95,7 +95,7 @@ export const updateMe = catchAsync(async (req, res, next) => {
 export const createUser = factory.createOne(User, ...fields);
 export const getUser = factory.getOne(User, ...excludedFields);
 export const getAllUsers = factory.getAll(User);
-export const updateUser = factory.updateOne(User, fields);
+export const updateUser = factory.updateOne(User, ...fields);
 export const deleteUser = factory.deleteOne(User);
 
 export const addUserAccount = catchAsync(async (req, res, next) => {
@@ -123,4 +123,3 @@ export const addUserAccount = catchAsync(async (req, res, next) => {
     },
   });
 });
-export const closeAccount = factory.closeAccount(Account);

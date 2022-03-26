@@ -49,5 +49,3 @@ export const addCustomerAccount = catchAsync(async (req, res, next) => {
     },
   });
 });
-
-export const closeAccount = factory.closeAccount(Account);
