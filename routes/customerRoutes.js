@@ -18,8 +18,6 @@ router.use(authController.restrictTo("manager", "accountant"));
 
 // ADD A NEW CUSTOMER ACCOUNT
 router.post("/addAccount", customerController.addCustomerAccount);
-// CLOSE CUSTOMER ACCOUNT
-router.patch("/closeAccount/:id", customerController.closeAccount);
 
 router
   .route("/")
