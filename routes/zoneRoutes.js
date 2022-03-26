@@ -6,10 +6,11 @@ import * as authController from "./../controllers/authController.js";
 
 const router = express.Router({ mergeParams: true });
 
+router.use(authController.protect);
+
 // GET /zone/1/customers
 router.use("/:zoneId/customers", customerRouter);
 
-router.use(authController.protect);
 router.use(authController.restrictTo("manager"));
 router
   .route("/")
