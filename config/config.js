@@ -14,7 +14,7 @@ switch (process.env.NODE_ENV) {
     DATABASE = process.env.DATABASE_TEST;
     break;
   default:
-    DATABASE = process.env.DATABASE_DEV;
+    DATABASE = process.env.DATABASE_TEST;
 }
 
 const DatabaseConfig = {
