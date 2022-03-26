@@ -152,14 +152,19 @@ export const deleteOne = (Model) =>
 export const closeAccount = (Model) =>
   catchAsync(async (req, res, next) => {
     // 1. Find account
-    const account = await Model.findByPk(parseInt(req.params.id, 10));
+    const account = await Model.findByPk(req.params.id);
 
     // 2. Check if it exists
     if (!account) {
       return next(new AppError("No account found with this ID!", 404));
     }
 
-    // 3. set to inactive
+    // 3. Make sure it is not a source account
+    if (account.type === "source") {
+      return next(new AppError("Can't delete source account!", 400));
+    }
+
+    // 4. set to inactive
     account.active = false;
     account.dateClosed = Date.now();
     await account.save();
