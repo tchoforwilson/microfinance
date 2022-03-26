@@ -17,8 +17,10 @@ describe("AuthController_Tests", () => {
   beforeAll(async () => {
     const mod = await import("../../../index");
     server = mod.default;
-    await User.sequelize.sync();
-    await Account.sequelize.sync();
+    await User.sequelize.authenticate();
+    await Account.sequelize.authenticate();
+    // create source account for accountant and manager
+    await Account.create({ type: "source", name: "source" });
   });
 
   afterAll(async () => {
@@ -27,8 +29,8 @@ describe("AuthController_Tests", () => {
     }
   });
   afterEach(async () => {
-    await User.destroy({ where: {}, truncate: false });
     await Account.destroy({ where: {}, truncate: false });
+    await User.destroy({ where: {}, truncate: false });
   });
 
   /*****************************************/
@@ -59,10 +61,7 @@ describe("AuthController_Tests", () => {
       const UserResult = await User.create(oUser);
 
       // 2. Create user account
-      const oAccount = UnitTest.GenRandomValidUserAccount(
-        UserResult.user_id,
-        "user"
-      );
+      const oAccount = UnitTest.GenRandomValidUserAccount(UserResult.id);
 
       await Account.create({ oAccount });
 
@@ -80,10 +79,7 @@ describe("AuthController_Tests", () => {
       const UserResult = await User.create(oUser);
 
       // 2. Create user account
-      const oAccount = UnitTest.GenRandomValidUserAccount(
-        UserResult.user_id,
-        "user"
-      );
+      const oAccount = UnitTest.GenRandomValidUserAccount(UserResult.id);
 
       await Account.create(oAccount);
 
@@ -100,6 +96,14 @@ describe("AuthController_Tests", () => {
       // Object.keys(data.data.user).forEach((el) => {
       //   expect(data.data.user).toHaveProperty(el, oUser[el]);
       // });
+      // 5. If user role is accountant or manager, make sure account of type source
+      if (
+        data.data.user.role === "manager" ||
+        data.data.user.role === "accountant"
+      ) {
+        expect(data.data.user.account.type).toBe("source");
+        expect(data.data.user.account.name).toBe("source");
+      }
     });
   });
   /*****************************************/
@@ -157,16 +161,13 @@ describe("AuthController_Tests", () => {
       // 2. hash password before saving user
       const password = user.password; // save unhashed password
       user.password = await bcrypt.hash(user.password, 12);
-      user.password_confirm = user.password;
+      user.passwordConfirm = user.password;
 
       // 3. Save user in the database
       const newUser = await User.create(user);
 
       // 4. Generate random valid account
-      const account = UnitTest.GenRandomValidUserAccount(
-        newUser.user_id,
-        "user"
-      );
+      const account = UnitTest.GenRandomValidUserAccount(newUser.id, "user");
 
       // 5. Save account in the database
       const newAccount = await Account.create(account);
@@ -182,6 +183,14 @@ describe("AuthController_Tests", () => {
       // Object.keys(data.data.user).forEach((el) => {
       //   expect(data.user).toHaveProperty(el, user[el]);
       // });
+      // 5. If user role is accountant or manager, make sure account of type source
+      if (
+        data.data.user.role === "manager" ||
+        data.data.user.role === "accountant"
+      ) {
+        expect(data.data.user.account.type).to.eql("source");
+        expect(data.data.user.account.name).to.eql("source");
+      }
     });
   });
 });
