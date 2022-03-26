@@ -204,5 +204,18 @@ describe("ZoneController_Tests", () => {
       expect(returnedZone.active).toBe(false);
     });
   });
-  // TODO: Write the test for this route "GET /zone/1/customers"
+  describe("GET /zone/:zoneId/customers", () => {
+    it.only("Test_GetAllCustomersInZone It should return 404 if no customers are found in the zone", async () => {
+      // 1. Generate random valid zone
+      const genZone = UnitTest.GenRandomValidZone(adminUser.id);
+      // 2. Populate table with zone
+      const zone = await Zone.create(genZone);
+      // 3. Send request
+      const res = await request(server)
+        .delete(`/api/v1/zones/${zone.id}/customers`)
+        .set("Authorization", header);
+      // 5. Expect result
+      expect(res.status).toBe(404);
+    });
+  });
 });
