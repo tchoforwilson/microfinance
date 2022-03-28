@@ -156,7 +156,7 @@ describe("CustomerController_Tests", () => {
     });
   });
   describe("GET /api/v1/customers/:id", () => {
-    it("Test GetCustomer It should return 404 for customer not found", async () => {
+    it("Test_GetCustomer It should return 404 for customer not found", async () => {
       // 1. Generate random number as id,
       const id = RandomVal.GenRandomInteger(MAX);
 
@@ -167,6 +167,31 @@ describe("CustomerController_Tests", () => {
 
       // 3. Expect results
       expect(res.status).toBe(404);
+    });
+    it("Test_GetCustomer It should return 200 if customer is found", async () => {
+      // 1. Generate and create random valid zone
+      // a. generate zone
+      const genZone = UnitTest.GenRandomValidZone(adminUser.id);
+      // b. create zone
+      const zone = await Zone.create(genZone);
+
+      // 2. Generate and create random valid customer
+      // a. generate customer
+      const genCustomer = UnitTest.GenRandomValidCustomer(zone.id);
+      // b. create customer
+      const customer = await Customer.create(genCustomer);
+
+      // 3. Send request
+      const res = await request(server)
+        .get(`/api/v1/customers/${customer.id}`)
+        .set("Authorization", header);
+
+      // 4. expect result
+      expect(res.status).toBe(200);
+      const { data } = JSON.parse(res.text);
+      expect(data.data.identity).toEqual(customer.identity);
+      expect(data.data.contact).toEqual(customer.contact);
+      expect(data.data.email).toEqual(customer.email);
     });
   });
   describe("DELETE /api/v1/customers/:id", () => {
