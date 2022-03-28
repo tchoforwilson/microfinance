@@ -17,7 +17,7 @@ router.route("/:id").get(customerController.getCustomer);
 router.use(authController.restrictTo("manager", "accountant"));
 
 // ADD A NEW CUSTOMER ACCOUNT
-router.post("/addAccount", customerController.addCustomerAccount);
+router.route("/addAccount").post(customerController.addCustomerAccount);
 
 router
   .route("/")
