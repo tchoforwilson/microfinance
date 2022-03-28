@@ -155,6 +155,20 @@ describe("CustomerController_Tests", () => {
       expect(updateCustomer.contact).toEqual(returnedCustomer.contact);
     });
   });
+  describe("GET /api/v1/customers/:id", () => {
+    it("Test GetCustomer It should return 404 for customer not found", async () => {
+      // 1. Generate random number as id,
+      const id = RandomVal.GenRandomInteger(MAX);
+
+      // 2. Send request
+      const res = await request(server)
+        .get(`/api/v1/customers/${id}`)
+        .set("Authorization", header);
+
+      // 3. Expect results
+      expect(res.status).toBe(404);
+    });
+  });
   describe("DELETE /api/v1/customers/:id", () => {
     it("Test_DeleteCustomer It should return 404 for customer not found", async () => {
       // 1. Generate random number as id,
