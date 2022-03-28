@@ -112,4 +112,18 @@ describe("CustomerController_Tests", () => {
       expect(data.data.docs.count).toEqual(genCustomers.length);
     });
   });
+  describe("PATCH /api/v1/customers/:id", () => {
+    it("Test_UpdateCustomer It should return 404 for customer not found", async () => {
+      // 1. Generate random numbers as customer id
+      const id = RandomVal.GenRandomInteger(MAX);
+
+      // 2. Send request
+      const res = await request(server)
+        .get(`/api/v1/customers/${id}`)
+        .set("Authorization", header);
+
+      // 3. expect result
+      expect(res.status).toBe(404);
+    });
+  });
 });
