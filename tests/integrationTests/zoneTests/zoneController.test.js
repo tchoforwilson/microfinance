@@ -2,11 +2,12 @@
 import request from "supertest";
 import * as RandomVal from "./../../testUtilities/GenRandomVal.js";
 import * as UnitTest from "./../../testUtilities/unit_testbases.js";
-import { signToken } from "./../../testUtilities/testUtils.js";
+import { createAdminUser, getHeader } from "./../../testUtilities/testUtils.js";
 import database from "./../../../config/database.js";
 
 const User = database.user;
 const Zone = database.zone;
+const Customer = database.customer;
 const Op = database.Sequelize.Op;
 
 describe("ZoneController_Tests", () => {
@@ -16,35 +17,23 @@ describe("ZoneController_Tests", () => {
   let server;
   let adminUser = {};
   let header;
-  const createAdmin = async () => {
-    const user = UnitTest.GenRandomValidUserWithPassword();
-    user.password = "pass1234";
-    user.passwordConfirm = "pass1234";
-    user.role = "manager";
-    user.rights.push(
-      "createZone",
-      "getZones",
-      "getZone",
-      "updateZone",
-      "deleteZone"
-    );
-    adminUser = await User.create(user);
-    const token = signToken(adminUser.id);
-    header = "Bearer " + token;
-  };
   // 1. Call the server
   beforeAll(async () => {
     const mod = await import("../../../index");
     server = mod.default;
     await User.sequelize.authenticate();
     await Zone.sequelize.authenticate();
-    await createAdmin();
+    await Customer.sequelize.authenticate();
+    adminUser = await createAdminUser("manager");
+    header = getHeader(adminUser);
   });
 
   afterAll(async () => {
     if (server) {
       await server.close();
     }
+    await Customer.destroy({ where: {}, truncate: false });
+    await Zone.destroy({ where: {}, truncate: false });
     await User.destroy({
       where: {},
       truncate: false,
@@ -204,18 +193,48 @@ describe("ZoneController_Tests", () => {
       expect(returnedZone.active).toBe(false);
     });
   });
-  describe("GET /zone/:zoneId/customers", () => {
-    it.only("Test_GetAllCustomersInZone It should return 404 if no customers are found in the zone", async () => {
+  describe("GET /api/v1/zones/:zoneId/customers", () => {
+    it("Test_GetAllCustomersInZone It should return 404 if no customers are found in the zone", async () => {
       // 1. Generate random valid zone
       const genZone = UnitTest.GenRandomValidZone(adminUser.id);
       // 2. Populate table with zone
       const zone = await Zone.create(genZone);
       // 3. Send request
       const res = await request(server)
-        .delete(`/api/v1/zones/${zone.id}/customers`)
+        .get(`/api/v1/zones/${zone.id}/customers`)
         .set("Authorization", header);
       // 5. Expect result
       expect(res.status).toBe(404);
+    });
+    it.only("Test_GetAllCustomersInZone It should return 200 if there are customers in zone", async () => {
+      // 1. Generate random valid zone
+      const genZone = UnitTest.GenRandomValidZone(adminUser.id);
+
+      // 2. Populate table with zone
+      const zone = await Zone.create(genZone);
+
+      // 3. Generate random customers
+      const zones = [];
+      zones.push(zone.id);
+      const customers = UnitTest.GenRandomValidCustomers(
+        RandomVal.GenRandomInteger(MIN),
+        zones
+      );
+
+      console.log("CUSTOMERS", customers);
+
+      // 4. Populate Database with customers
+      const returnCustomers = await Customer.bulkCreate(customers);
+
+      // 5. Send request
+      const res = await request(server)
+        .get(`/api/v1/zones/${zone.id}/customers`)
+        .set("Authorization", header);
+
+      // 6. Expect result
+      expect(res.status).toBe(200);
+      const data = JSON.parse(res.text);
+      expect(data.data.docs.count).toEqual(customers.length);
     });
   });
 });
