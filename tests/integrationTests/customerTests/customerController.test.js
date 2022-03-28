@@ -8,6 +8,7 @@ import database from "./../../../config/database.js";
 const User = database.user;
 const Zone = database.zone;
 const Customer = database.customer;
+const Account = database.account;
 const Op = database.Sequelize.Op;
 
 describe("CustomerController_Tests", () => {
@@ -24,6 +25,7 @@ describe("CustomerController_Tests", () => {
     await User.sequelize.authenticate();
     await Zone.sequelize.authenticate();
     await Customer.sequelize.authenticate();
+    await Account.sequelize.authenticate();
     adminUser = await createAdminUser("manager");
     header = getHeader(adminUser);
   });
@@ -229,6 +231,59 @@ describe("CustomerController_Tests", () => {
       expect(res.status).toBe(204);
       const returnedCustomer = await Customer.findByPk(customer.id);
       expect(returnedCustomer.active).toBe(false);
+    });
+  });
+  describe("POST /api/v1/customers/addAccount", () => {
+    // TODO: Failed test internal error
+    it.only("Test_AddCustomerAccount It should return 404 if the customer is not found", async () => {
+      // 1. Generate random number as customer id
+      const id = RandomVal.GenRandomInteger(MAX);
+
+      // 2. Generate random valid account name
+      const name = RandomVal.GenRandomValidString(MAX);
+
+      // 3. Send request
+      const customer = {};
+      customer.name = name;
+      customer.customer = id;
+      const res = await request(server)
+        .post("/api/v1/customers/addAccount")
+        .set("Authorization", header)
+        .send(customer);
+
+      // 4. Expect results
+      expect(res.status).toBe(404);
+    });
+    it("Test_AddCustomerAccount It should return 200 if the customer account is created", async () => {
+      // 1. Generate and create random valid zone
+      // a. generate zone
+      const genZone = UnitTest.GenRandomValidZone(adminUser.id);
+      // b. create zone
+      const zone = await Zone.create(genZone);
+
+      // 2. Generate and create random valid customer
+      // a. generate customer
+      const genCustomer = UnitTest.GenRandomValidCustomer(zone.id);
+      // b. create customer
+      const customer = await Customer.create(genCustomer);
+
+      // 3. Generate random valid account name
+      const name = RandomVal.GenRandomValidString(MAX);
+
+      // 4. Send request with account name and customer's ID
+      const res = await request(server)
+        .post("/api/v1/customers/addAccount")
+        .set("Authorization", header)
+        .send({ name, customer: customer.id });
+
+      // 5. Expect results
+      expect(res.status).toBe(200);
+      const { data } = JSON.parse(res.text);
+      expect(data.account.name).toEqual(name);
+      expect(data.account.customer).toEqual(customer.id);
+      expect(data.account.type).toBe("customer");
+
+      await Account.destroy({ where: {}, truncate: false });
     });
   });
 });
