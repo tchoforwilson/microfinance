@@ -51,7 +51,7 @@ describe("CustomerController_Tests", () => {
     });
   });
   describe("POST /api/v1/customers", () => {
-    it.only("Test_CreateCustomer It should return 200 for successful creation", async () => {
+    it("Test_CreateCustomer It should return 200 for successful creation", async () => {
       // 1. Generate random valid zone
       const genZone = UnitTest.GenRandomValidZone(adminUser.id);
 
@@ -74,6 +74,17 @@ describe("CustomerController_Tests", () => {
 
       expect(returnCustomer).toHaveProperty("id");
       expect(returnCustomer.zone).toBe(zone.id);
+    });
+  });
+  describe("GET /api/v1/customers", () => {
+    it("Test_GetAllCustomers It should return 404 for no customers found", async () => {
+      // 1. Send request
+      const res = await request(server)
+        .get("/api/v1/customers")
+        .set("Authorization", header);
+
+      // 2. Expect result
+      expect(res.status).toBe(404);
     });
   });
 });
