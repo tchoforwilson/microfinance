@@ -86,5 +86,30 @@ describe("CustomerController_Tests", () => {
       // 2. Expect result
       expect(res.status).toBe(404);
     });
+    it("Test_GetAllCustomers It should return 200 for all customers found", async () => {
+      // 1. Generate and create valid zone
+      // a. Generate zone
+      const genZone = UnitTest.GenRandomValidZone(adminUser.id);
+      // b. create zone
+      const zone = await Zone.create(genZone);
+      let zones = [];
+      zones.push[zone.id];
+
+      // 2. Generate and create random valid customers
+      // a. generate customer
+      const genCustomers = UnitTest.GenRandomValidCustomers(MIN, zones);
+      // b. create customers
+      await Customer.bulkCreate(genCustomers);
+
+      // 3. Send request
+      const res = await request(server)
+        .get("/api/v1/customers")
+        .set("Authorization", header);
+
+      // 4. Expect result
+      expect(res.status).toBe(200);
+      const data = JSON.parse(res.text);
+      expect(data.data.docs.count).toEqual(genCustomers.length);
+    });
   });
 });
