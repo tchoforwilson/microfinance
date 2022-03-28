@@ -32,8 +32,6 @@ describe("ZoneController_Tests", () => {
     if (server) {
       await server.close();
     }
-    await Customer.destroy({ where: {}, truncate: false });
-    await Zone.destroy({ where: {}, truncate: false });
     await User.destroy({
       where: {},
       truncate: false,
@@ -206,7 +204,7 @@ describe("ZoneController_Tests", () => {
       // 5. Expect result
       expect(res.status).toBe(404);
     });
-    it.only("Test_GetAllCustomersInZone It should return 200 if there are customers in zone", async () => {
+    it("Test_GetAllCustomersInZone It should return 200 if there are customers in zone", async () => {
       // 1. Generate random valid zone
       const genZone = UnitTest.GenRandomValidZone(adminUser.id);
 
@@ -221,8 +219,6 @@ describe("ZoneController_Tests", () => {
         zones
       );
 
-      console.log("CUSTOMERS", customers);
-
       // 4. Populate Database with customers
       const returnCustomers = await Customer.bulkCreate(customers);
 
@@ -235,6 +231,9 @@ describe("ZoneController_Tests", () => {
       expect(res.status).toBe(200);
       const data = JSON.parse(res.text);
       expect(data.data.docs.count).toEqual(customers.length);
+
+      // 7. Destroy everything in the database
+      await Customer.destroy({ where: {}, truncate: false });
     });
   });
 });
