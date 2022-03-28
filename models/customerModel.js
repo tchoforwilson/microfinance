@@ -32,6 +32,12 @@ export default (sequelize, DataTypes) => {
         },
       },
     },
+    fullname: {
+      type: DataTypes.VIRTUAL,
+      get() {
+        return `${this.firstname} ${this.lastname}`;
+      },
+    },
     gender: {
       type: DataTypes.ENUM,
       values: ["male", "female"],
@@ -48,19 +54,19 @@ export default (sequelize, DataTypes) => {
           args: true,
           msg: "Invalid identity number!",
         },
-        len: [9, 13],
+        len: 9,
       },
     },
     contact: {
-      type: DataTypes.STRING(12),
+      type: DataTypes.STRING(13),
       allowNull: false,
       unique: true,
       validate: {
-        len: 9,
         isNumeric: {
           args: true,
           msg: "Please provide numeric contact!",
         },
+        len: [9, 13],
       },
     },
     email: {
