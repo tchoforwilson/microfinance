@@ -2,7 +2,7 @@
 import request from "supertest";
 import * as RandomVal from "./../../testUtilities/GenRandomVal.js";
 import * as UnitTest from "./../../testUtilities/unit_testbases.js";
-import { signToken } from "./../../testUtilities/testUtils.js";
+import { createAdminUser, getHeader } from "./../../testUtilities/testUtils.js";
 import database from "./../../../config/database.js";
 
 const User = database.user;
@@ -15,28 +15,13 @@ describe("UserController_Tests", () => {
   let server;
   let adminUser = {};
   let header;
-  const createAdmin = async () => {
-    const user = UnitTest.GenRandomValidUserWithPassword();
-    user.password = "pass1234";
-    user.passwordConfirm = "pass1234";
-    user.role = "manager";
-    user.rights.push(
-      "createUser",
-      "getUsers",
-      "getUser",
-      "updateUser",
-      "deleteUser"
-    );
-    adminUser = await User.create(user);
-    const token = signToken(adminUser.id);
-    header = "Bearer " + token;
-  };
   // 1. Call the server
   beforeAll(async () => {
     const mod = await import("../../../index");
     server = mod.default;
     await User.sequelize.sync();
-    await createAdmin();
+    adminUser = await createAdminUser("manager");
+    header = getHeader(adminUser);
   });
 
   afterAll(async () => {
