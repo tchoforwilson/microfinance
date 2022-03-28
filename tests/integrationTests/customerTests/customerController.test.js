@@ -234,8 +234,7 @@ describe("CustomerController_Tests", () => {
     });
   });
   describe("POST /api/v1/customers/addAccount", () => {
-    // TODO: Failed test internal error
-    it.only("Test_AddCustomerAccount It should return 404 if the customer is not found", async () => {
+    it("Test_AddCustomerAccount It should return 404 if the customer is not found", async () => {
       // 1. Generate random number as customer id
       const id = RandomVal.GenRandomInteger(MAX);
 
@@ -285,5 +284,39 @@ describe("CustomerController_Tests", () => {
 
       await Account.destroy({ where: {}, truncate: false });
     });
+  });
+  it("GET /api/v1/customers/:customerId/accounts", async () => {
+    // 1. Generate and create random valid zone
+    // a. generate zone
+    const genZone = UnitTest.GenRandomValidZone(adminUser.id);
+    // b. create zone
+    const zone = await Zone.create(genZone);
+
+    // 2. Generate and create random valid customer
+    // a. generate customer
+    const genCustomer = UnitTest.GenRandomValidCustomer(zone.id);
+    // b. create customer
+    const customer = await Customer.create(genCustomer);
+
+    // 3. Generate random valid customer accounts name
+    const accounts = [];
+    for (var i = 0; i < MIN; i++) {
+      accounts.push(UnitTest.GenRandomValidCustomerAccount(customer.id));
+    }
+    // 4. Create customer accounts
+    await Account.bulkCreate(accounts);
+
+    // 5. Send request to get all customers accounts
+    const res = await request(server)
+      .get(`/api/v1/customers/${customer.id}/accounts`)
+      .set("Authorization", header);
+
+    // 6. Expect results
+    expect(res.status).toBe(200);
+    const { data } = JSON.parse(res.text);
+    expect(data.docs.count).toEqual(MIN);
+
+    // 7. Destroy account data
+    await Account.destroy({ where: {}, truncate: false });
   });
 });
