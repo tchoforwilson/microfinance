@@ -2,6 +2,7 @@
 import * as factory from "./handlerFactory.js";
 import catchAsync from "./../utils/catchAsync.js";
 import database from "./../config/database.js";
+import AppError from "./../utils/appError.js";
 
 const Customer = database.customer;
 const Account = database.account;
@@ -36,7 +37,7 @@ export const addCustomerAccount = catchAsync(async (req, res, next) => {
   // 2. Check if user exist
   const doc = await Customer.findByPk(customer);
   if (!doc) {
-    return next(new AppError("User not found!", 404));
+    return next(new AppError("Customer not found!", 404));
   }
 
   // 3. Create account
