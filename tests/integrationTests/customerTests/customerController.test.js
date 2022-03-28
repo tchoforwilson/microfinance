@@ -125,5 +125,34 @@ describe("CustomerController_Tests", () => {
       // 3. expect result
       expect(res.status).toBe(404);
     });
+    it("Test_UpdateCustomer It should return 201 for a successful customer update", async () => {
+      // 1. Generate and create random valid zone
+      // a. generate zone
+      const genZone = UnitTest.GenRandomValidZone(adminUser.id);
+      // b. create zone
+      const zone = await Zone.create(genZone);
+
+      // 2. Generate and create random valid customer
+      // a. generate customer
+      const genCustomer = UnitTest.GenRandomValidCustomer(zone.id);
+      // b. create customer
+      const customer = await Customer.create(genCustomer);
+
+      // 3. Generate customer for update
+      const updateCustomer = UnitTest.GenRandomValidCustomer(zone.id);
+
+      // 4. Send request
+      const res = await request(server)
+        .patch(`/api/v1/customers/${customer.id}`)
+        .set("Authorization", header)
+        .send(updateCustomer);
+
+      // 4. expect result
+      expect(res.status).toBe(201);
+      const returnedCustomer = await Customer.findByPk(customer.id);
+      expect(updateCustomer.email).toEqual(returnedCustomer.email);
+      expect(updateCustomer.identity).toEqual(returnedCustomer.identity);
+      expect(updateCustomer.contact).toEqual(returnedCustomer.contact);
+    });
   });
 });
