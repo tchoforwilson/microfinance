@@ -168,5 +168,28 @@ describe("CustomerController_Tests", () => {
       // 3. Expect results
       expect(res.status).toBe(404);
     });
+    it("Test_DeleteCustomer It should return 204 if the customer is set to inactive", async () => {
+      // 1. Generate and create random valid zone
+      // a. generate zone
+      const genZone = UnitTest.GenRandomValidZone(adminUser.id);
+      // b. create zone
+      const zone = await Zone.create(genZone);
+
+      // 2. Generate and create random valid customer
+      // a. generate customer
+      const genCustomer = UnitTest.GenRandomValidCustomer(zone.id);
+      // b. create customer
+      const customer = await Customer.create(genCustomer);
+
+      // 3. Send request
+      const res = await request(server)
+        .delete(`/api/v1/customers/${customer.id}`)
+        .set("Authorization", header);
+
+      // 4. expect result
+      expect(res.status).toBe(204);
+      const returnedCustomer = await Customer.findByPk(customer.id);
+      expect(returnedCustomer.active).toBe(false);
+    });
   });
 });
