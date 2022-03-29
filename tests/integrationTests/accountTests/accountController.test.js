@@ -242,5 +242,42 @@ describe("AccountController_Tests", () => {
       // 3.expect results
       expect(res.status).toBe(404);
     });
+    it("Test_DeleteAccount It should set account to inactive", async () => {
+      // 1. Generate random user
+      // a. generate user
+      const genUser = UnitTest.GenRandomValidUser();
+      // b. create user
+      const user = await User.create(genUser);
+
+      // 2. Generate and create random zone
+      // a. generate zone
+      const genZone = UnitTest.GenRandomValidZone(user.id);
+      // b. create zone
+      const zone = await Zone.create(genZone);
+
+      // 3. Generate and create random customer
+      // a. generate customer
+      const genCustomer = UnitTest.GenRandomValidCustomer(zone.id);
+      // b. create customer
+      const customer = await Customer.create(genCustomer);
+
+      // 4. Generate and create random customer account
+      // a. generate account
+      const genAccount = UnitTest.GenRandomValidCustomerAccount(customer.id);
+      // b. create account
+      const account = await Account.create(genAccount);
+
+      // 5. send request
+      const res = await request(server)
+        .delete(`/api/v1/accounts/${account.id}`)
+        .set("Authorization", header);
+
+      // 6. Expect results
+      expect(res.status).toBe(201);
+      const returnedAccount = await Account.findByPk(account.id);
+      expect(returnedAccount.active).toBe(false);
+      //TODO: complete this check 👇
+      //expect(returnedAccount.dateClosed).toBe(Date.now());
+    });
   });
 });
