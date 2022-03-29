@@ -9,6 +9,7 @@ const User = database.user;
 const Zone = database.zone;
 const Customer = database.customer;
 const Account = database.account;
+const Op = database.Sequelize.Op;
 
 describe("AccountController_Tests", () => {
   const MAX = 32;
@@ -37,16 +38,18 @@ describe("AccountController_Tests", () => {
       where: {},
       truncate: false,
     });
+    // close all database connections
+    await database.sequelize.close();
   });
   afterEach(async () => {
-    // await User.destroy({
-    //   where: { [Op.not]: [{ id: adminUser.id }] },
-    //   truncate: false,
-    // });
     await Account.destroy({ where: {}, truncate: false });
     await Customer.destroy({ where: {}, truncate: false });
     await Zone.destroy({
       where: {},
+      truncate: false,
+    });
+    await User.destroy({
+      where: { [Op.not]: [{ id: adminUser.id }] },
       truncate: false,
     });
   });
@@ -135,6 +138,44 @@ describe("AccountController_Tests", () => {
 
       // 3. Expect result
       expect(res.status).toBe(404);
+    });
+    it.only("Test_GetAccount It should return 200 if account is found", async () => {
+      // 1. Generate random user
+      // a. generate user
+      const genUser = UnitTest.GenRandomValidUser();
+      // b. create user
+      const user = await User.create(genUser);
+
+      // 2. Generate and create random zone
+      // a. generate zone
+      const genZone = UnitTest.GenRandomValidZone(user.id);
+      // b. create zone
+      const zone = await Zone.create(genZone);
+
+      // 3. Generate and create random customer
+      // a. generate customer
+      const genCustomer = UnitTest.GenRandomValidCustomer(zone.id);
+      // b. create customer
+      const customer = await Customer.create(genCustomer);
+
+      // 4. Generate and create random customer account
+      // a. generate account
+      const genAccount = UnitTest.GenRandomValidCustomerAccount(customer.id);
+      // b. create account
+      const account = await Account.create(genAccount);
+
+      // 5. Send request
+      const res = await request(server)
+        .get(`/api/v1/accounts/${account.id}`)
+        .set("Authorization", header);
+
+      // 6. Expect result
+      expect(res.status).toBe(200);
+      const { data } = JSON.parse(res.text);
+      expect(data.data.hasOwnProperty("createdAt")).toBe(true);
+      expect(data.data.name).toBe(genAccount.name);
+      expect(data.data.type).toBe("customer");
+      expect(data.data.balance).toBe(genAccount.balance);
     });
   });
 });
