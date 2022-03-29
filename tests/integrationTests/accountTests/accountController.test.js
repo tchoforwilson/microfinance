@@ -59,5 +59,68 @@ describe("AccountController_Tests", () => {
       // 2. Expect results
       expect(res.status).toBe(404);
     });
+    it("Test_GetAllAccounts It should return 200 for accounts found", async () => {
+      // 1. Generate and create random users
+      // a. generate users
+      const genUsers = UnitTest.GenRandValidUsers(
+        RandomVal.GenRandomInteger(MIN)
+      );
+      // b. create users
+      const users = await User.bulkCreate(genUsers);
+      // c. get users IDs
+      let userIds = [];
+      users.forEach((el) => {
+        userIds.push(el.id);
+      });
+
+      // 2. Generate and create random zones
+      // a. generate zones
+      const genZones = UnitTest.GenRandomValidZones(
+        RandomVal.GenRandomInteger(MIN),
+        userIds
+      );
+      // b. create zones
+      const zones = await Zone.bulkCreate(genZones);
+      // c. get zones IDs
+      let zoneIds = [];
+      zones.forEach((el) => {
+        zoneIds.push(el.id);
+      });
+
+      // 3. Generate and create random customers
+      // a. generate customers
+      const genCustomers = UnitTest.GenRandomValidCustomers(
+        RandomVal.GenRandomInteger(MIN),
+        zoneIds
+      );
+      // b. create customers
+      const customers = await Customer.bulkCreate(genCustomers);
+      // c. get customer IDs
+      let customerIds = [];
+      customers.forEach((el) => {
+        customerIds.push(el.id);
+      });
+
+      // 4. Generate and create random customers accounts
+      // a. generate
+      let genAccounts = [];
+      for (var i = 0; i < genCustomers.length; i++) {
+        genAccounts.push(
+          UnitTest.GenRandomValidCustomerAccount(customers[i].id)
+        );
+      }
+      // b. create accounts
+      const accounts = await Account.bulkCreate(genAccounts);
+
+      // 5. Send request
+      const res = await request(server)
+        .get("/api/v1/accounts")
+        .set("Authorization", header);
+
+      // 6. Expect results
+      expect(res.status).toBe(200);
+      const { data } = JSON.parse(res.text);
+      expect(data.docs.count).toBe(accounts.length);
+    });
   });
 });
