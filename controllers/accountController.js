@@ -26,6 +26,6 @@ export const getSumAllCustomersBalance = catchAsync(async (req, res, next) => {
 });
 
 export const getAllAccounts = factory.getAll(Account);
-export const getAccount = factory.getOne(Account, "active");
+export const getAccount = factory.getOne(Account, "active", "user");
 export const updateAccount = factory.updateOne(Account, "name", "active");
 export const deleteAccount = factory.closeAccount(Account);
