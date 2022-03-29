@@ -110,15 +110,20 @@ export const deleteSource = catchAsync(async (req, res, next) => {
     where: { [Op.and]: [{ name: "Source" }, { type: "source" }] },
   });
 
-  //4. Delete source
+  // 4. Check that source account exist
+  if (!sourceAccount) {
+    return next(new AppError("Unable to find source account!", 404));
+  }
+
+  //5. Delete source
   await Source.destroy({
     where: { id: req.params.id },
   });
 
-  // 5. Add amount to source account
+  // 6. Remove amount from source account
   sourceAccount.balance -= amount;
 
-  // 6. Save result
+  // 7. Save result
   await sourceAccount.save();
 
   res.status(201).json({
