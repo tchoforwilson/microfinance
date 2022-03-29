@@ -191,5 +191,42 @@ describe("AccountController_Tests", () => {
       // 3.expect results
       expect(res.status).toBe(404);
     });
+    it("Test_UpdateAccount It should return 201 if account is updated", async () => {
+      // 1. Generate random user
+      // a. generate user
+      const genUser = UnitTest.GenRandomValidUser();
+      // b. create user
+      const user = await User.create(genUser);
+
+      // 2. Generate and create random zone
+      // a. generate zone
+      const genZone = UnitTest.GenRandomValidZone(user.id);
+      // b. create zone
+      const zone = await Zone.create(genZone);
+
+      // 3. Generate and create random customer
+      // a. generate customer
+      const genCustomer = UnitTest.GenRandomValidCustomer(zone.id);
+      // b. create customer
+      const customer = await Customer.create(genCustomer);
+
+      // 4. Generate and create random customer account
+      // a. generate account
+      const genAccount = UnitTest.GenRandomValidCustomerAccount(customer.id);
+      // b. create account
+      const account = await Account.create(genAccount);
+      // c. generate account update values
+      const name = RandomVal.GenRandomValidString(MAX);
+
+      // 5. Send request
+      const res = await request(server)
+        .patch(`/api/v1/accounts/${account.id}`)
+        .send({ name })
+        .set("Authorization", header);
+
+      // 6. Find account
+      const updatedAccount = await Account.findByPk(account.id);
+      expect(updatedAccount.name).toBe(name);
+    });
   });
 });
