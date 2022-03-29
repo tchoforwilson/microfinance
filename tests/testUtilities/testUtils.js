@@ -3,6 +3,7 @@ import { GenRandomValidUserWithPassword } from "./../testUtilities/unit_testbase
 import database from "./../../config/database.js";
 
 const User = database.user;
+const Account = database.account;
 /**
  * Generate a sign token
  * @param {String} id -> Token payload
@@ -44,4 +45,12 @@ export const createAdminUser = async (role) => {
 export const getHeader = (user) => {
   const token = signToken(user.id);
   return "Bearer " + token;
+};
+
+/**
+ * Create the source account in the account table
+ * @returns {Object} account
+ */
+export const createSourceAccount = async () => {
+  return await Account.create({ name: "Source", type: "source" });
 };
