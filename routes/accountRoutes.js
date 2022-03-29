@@ -16,6 +16,7 @@ router.route("/").get(accountController.getAllAccounts);
 router
   .route("/:id")
   .get(accountController.getAccount)
-  .patch(accountController.updateAccount);
+  .patch(accountController.updateAccount)
+  .delete(accountController.deleteAccount);
 
 export default router;
