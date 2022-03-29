@@ -139,7 +139,7 @@ describe("AccountController_Tests", () => {
       // 3. Expect result
       expect(res.status).toBe(404);
     });
-    it.only("Test_GetAccount It should return 200 if account is found", async () => {
+    it("Test_GetAccount It should return 200 if account is found", async () => {
       // 1. Generate random user
       // a. generate user
       const genUser = UnitTest.GenRandomValidUser();
@@ -176,6 +176,20 @@ describe("AccountController_Tests", () => {
       expect(data.data.name).toBe(genAccount.name);
       expect(data.data.type).toBe("customer");
       expect(data.data.balance).toBe(genAccount.balance);
+    });
+  });
+  describe("PATCH /api/v1/accounts/:id", () => {
+    it("Test_UpdateAccount It should return 404 for account not found", async () => {
+      // 1. Generate random number as id
+      const id = RandomVal.GenRandomInteger(MAX);
+
+      // 2. send request
+      const res = await request(server)
+        .patch(`/api/v1/accounts/${id}`)
+        .set("Authorization", header);
+
+      // 3.expect results
+      expect(res.status).toBe(404);
     });
   });
 });
