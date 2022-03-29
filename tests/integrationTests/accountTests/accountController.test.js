@@ -229,4 +229,18 @@ describe("AccountController_Tests", () => {
       expect(updatedAccount.name).toBe(name);
     });
   });
+  describe("DELETE /api/v1/accounts/:id", () => {
+    it("Test_DeleteAccount It should return 404 for account not found", async () => {
+      // 1. Generate random number as id
+      const id = RandomVal.GenRandomInteger(MAX);
+
+      // 2. send request
+      const res = await request(server)
+        .delete(`/api/v1/accounts/${id}`)
+        .set("Authorization", header);
+
+      // 3.expect results
+      expect(res.status).toBe(404);
+    });
+  });
 });
