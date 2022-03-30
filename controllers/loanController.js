@@ -60,8 +60,8 @@ export const createLoan = catchAsync(async (req, res, next) => {
 });
 
 export const getAllLoans = factory.getAll(Loan);
-export const getLoan = factory.getOne(Loan, excludedFields);
-export const updateLoan = factory.updateOne(Loan, fields);
+export const getLoan = factory.getOne(Loan, ...excludedFields);
+export const updateLoan = factory.updateOne(Loan, ...fields);
 
 export const deleteLoan = catchAsync(async (req, res, next) => {
   // 1. Get loan
