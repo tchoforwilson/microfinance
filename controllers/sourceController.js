@@ -121,7 +121,7 @@ export const deleteSource = catchAsync(async (req, res, next) => {
   });
 
   // 6. Remove amount from source account
-  sourceAccount.balance -= amount;
+  sourceAccount.balance -= source.amount;
 
   // 7. Save result
   await sourceAccount.save();
