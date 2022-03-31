@@ -153,7 +153,7 @@ describe("LoanController_Tests", () => {
       // 3. Expect result
       expect(res.status).toBe(404);
     });
-    it.only("Test_Prepayment It should return 400 if the amount is greater than the loan amount", async () => {
+    it("Test_Prepayment It should return 400 if the amount is greater than the loan amount", async () => {
       // 1. Generate and create a valid zone
       // .a generate a valid zone
       const genZone = UnitTest.GenRandomValidZone(adminUser.id);
@@ -180,6 +180,39 @@ describe("LoanController_Tests", () => {
 
       // 5. Expect result
       expect(res.status).toBe(400);
+    });
+    it("Test_Prepayment It should return 200 if the loan is prepaid", async () => {
+      // 1. Generate and create a valid zone
+      // .a generate a valid zone
+      const genZone = UnitTest.GenRandomValidZone(adminUser.id);
+      // b. create zone
+      const zone = await Zone.create(genZone);
+      // 2. Generate and create a valid customer
+      // a. generate customer
+      const genCustomer = UnitTest.GenRandomValidCustomer(zone.id);
+      // b. create customer
+      const customer = await Customer.create(genCustomer);
+      // 3. Generate and create loan
+      // a. generate loan
+      const genLoan = UnitTest.GenRandomValidLoan(customer.id);
+      genLoan.amount = RandomVal.GenRandomBigAmount();
+      genLoan.balance = genLoan.amount;
+      genLoan.interestRate = 0.5;
+      // b. create loan
+      const loan = await Loan.create(genLoan);
+      const amount = RandomVal.GenRandomSmallAmount();
+
+      // 4. Send request
+      const res = await request(server)
+        .patch("/api/v1/loans/prepayment")
+        .set("Authorization", header)
+        .send({ id: loan.id, amount });
+
+      // 5. Expect result
+      expect(res.status).toBe(201);
+      const { data } = JSON.parse(res.text);
+      // TODO: check that loan balance is less than loan amount
+      //expect(data.loan.balance).toBeLestThan(genLoan.amount);
     });
   });
 });
