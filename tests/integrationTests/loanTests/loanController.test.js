@@ -4,7 +4,6 @@ import * as RandomVal from "./../../testUtilities/GenRandomVal.js";
 import * as UnitTest from "./../../testUtilities/unit_testbases.js";
 import { createAdminUser, getHeader } from "./../../testUtilities/testUtils.js";
 import database from "./../../../config/database.js";
-import { crossOriginResourcePolicy } from "helmet";
 
 const User = database.user;
 const Zone = database.zone;
@@ -139,6 +138,20 @@ describe("LoanController_Tests", () => {
       expect(res.status).toBe(200);
       const { data } = JSON.parse(res.text);
       expect(data.loan.status).toBe("unpaid");
+    });
+  });
+  describe("POST /api/v1/loans/prepayment", () => {
+    it.only("Test_Prepayment It should return 404 if the loan is not found", async () => {
+      // 1. Generate random valid number as id
+      const id = RandomVal.GenRandomInteger(MAX);
+      const amount = RandomVal.GenRandomBigAmount();
+      // 2. Send request
+      const res = await request(server)
+        .post("/api/v1/loans/prepayment")
+        .set("Authorization", header)
+        .send({ id, amount });
+      // 3. Expect result
+      expect(res.status).toBe(404);
     });
   });
 });
