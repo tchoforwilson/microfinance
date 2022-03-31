@@ -15,7 +15,7 @@ export default (sequelize, DataTypes) => {
       },
     },
     interestRate: {
-      type: DataTypes.INTEGER,
+      type: DataTypes.REAL,
       allowNull: false,
       validate: {
         notNull: {
