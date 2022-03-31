@@ -21,7 +21,7 @@ export const createLoan = catchAsync(async (req, res, next) => {
 
   // 2. Check if customer exist and is active
   const currentCustomer = await Customer.findByPk(customer);
-  if (!currentCustomer.active) {
+  if (!currentCustomer || !currentCustomer.active) {
     return next(new AppError("Customer inactive!", 404));
   }
 
@@ -32,7 +32,7 @@ export const createLoan = catchAsync(async (req, res, next) => {
     );
   }
   // 4. Make sure interest rate is not greater than 1 and less than 0;
-  if (interestRate < 0.0 || interestRate > 0.9) {
+  if (interestRate < 0.1 || interestRate > 0.9) {
     return next(
       new AppError("Invalid interest rate! not in range 0.1% and 0.9% ", 400)
     );
@@ -40,10 +40,10 @@ export const createLoan = catchAsync(async (req, res, next) => {
   // 5. Make loan
   const interest = amount * (interestRate / 100);
   const totalAmount = amount + interest;
-
   // 6. Save loan
   const loan = await Loan.create({
     amount: totalAmount,
+    interestRate,
     balance: totalAmount,
     customer: currentCustomer.id,
   });
