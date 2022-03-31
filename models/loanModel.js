@@ -14,6 +14,15 @@ export default (sequelize, DataTypes) => {
         },
       },
     },
+    interestRate: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      validate: {
+        notNull: {
+          msg: "Loan interest rate!",
+        },
+      },
+    },
     balance: {
       type: DataTypes.INTEGER,
       defaultValue: 0,
