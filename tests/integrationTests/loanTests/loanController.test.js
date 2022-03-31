@@ -141,7 +141,7 @@ describe("LoanController_Tests", () => {
     });
   });
   describe("POST /api/v1/loans/prepayment", () => {
-    it.only("Test_Prepayment It should return 404 if the loan is not found", async () => {
+    it("Test_Prepayment It should return 404 if the loan is not found", async () => {
       // 1. Generate random valid number as id
       const id = RandomVal.GenRandomInteger(MAX);
       const amount = RandomVal.GenRandomBigAmount();
@@ -152,6 +152,34 @@ describe("LoanController_Tests", () => {
         .send({ id, amount });
       // 3. Expect result
       expect(res.status).toBe(404);
+    });
+    it.only("Test_Prepayment It should return 400 if the amount is greater than the loan amount", async () => {
+      // 1. Generate and create a valid zone
+      // .a generate a valid zone
+      const genZone = UnitTest.GenRandomValidZone(adminUser.id);
+      // b. create zone
+      const zone = await Zone.create(genZone);
+      // 2. Generate and create a valid customer
+      // a. generate customer
+      const genCustomer = UnitTest.GenRandomValidCustomer(zone.id);
+      // b. create customer
+      const customer = await Customer.create(genCustomer);
+      // 3. Generate and create loan
+      // a. generate loan
+      const genLoan = UnitTest.GenRandomValidLoan(customer.id);
+      genLoan.interestRate = 0.5;
+      // b. create loan
+      const loan = await Loan.create(genLoan);
+      const amount = RandomVal.GenRandomBigAmount();
+
+      // 4. Send request
+      const res = await request(server)
+        .patch("/api/v1/loans/prepayment")
+        .set("Authorization", header)
+        .send({ id: loan.id, amount });
+
+      // 5. Expect result
+      expect(res.status).toBe(400);
     });
   });
 });
