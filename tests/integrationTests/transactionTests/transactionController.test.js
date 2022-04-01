@@ -276,5 +276,38 @@ describe("TransactionController_Tests", () => {
       // 6. expect result
       expect(res.status).toBe(400);
     });
+    it("Test_Deposit It should return 200 for a successful deposit into customer account", async () => {
+      // 1. Generate and create a valid zone
+      // a. generate zone
+      const genZone = UnitTest.GenRandomValidZone(adminUser.id);
+      // b. create zone
+      const zone = await Zone.create(genZone);
+      // 2. Generate and create random valid customer
+      // a. generate customer
+      const genCustomer = UnitTest.GenRandomValidCustomer(zone.id);
+      // b. create customer
+      const customer = await Customer.create(genCustomer);
+      // 3. Generate and create a random valid customer account
+      // a. generate account
+      const genAccount = UnitTest.GenRandomValidCustomerAccount(customer.id);
+      genAccount.balance = 0; // set account balance to zero
+      // b. create account
+      const account = await Account.create(genAccount);
+      // 4. Generate and integer amount between 100 and 400
+      const amount = RandomVal.GenRandomSmallAmount();
+      // 5. Send request
+      const res = await request(server)
+        .post("/api/v1/transactions/deposit")
+        .set("Authorization", header)
+        .send({ amount, account: account.id });
+      // 6. expect result
+      expect(res.status).toBe(200);
+      const { data } = JSON.parse(res.text);
+      expect(data.transaction.type).toBe("deposit");
+      expect(data.transaction.amount).toEqual(amount);
+      // 7. Find customer account and check if same balance is present
+      const customerAccount = await Account.findByPk(account.id);
+      expect(customerAccount.balance).toEqual(amount);
+    });
   });
 });
