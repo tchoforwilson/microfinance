@@ -225,10 +225,44 @@ describe("LoanController_Tests", () => {
       // 2. send request
       const res = await request(server)
         .patch("/api/v1/loans/recover")
-        .set("Authorization", header);
+        .set("Authorization", header)
+        .send({ id, account, amount });
 
       // 3. Expect result
       expect(res.status).toBe(404);
+    });
+    it("Test_RecoverLoan It should return 400 if the loan is paid or balance is zero", async () => {
+      // 1. Generate and create a valid zone
+      // .a generate a valid zone
+      const genZone = UnitTest.GenRandomValidZone(adminUser.id);
+      // b. create zone
+      const zone = await Zone.create(genZone);
+      // 2. Generate and create a valid customer
+      // a. generate customer
+      const genCustomer = UnitTest.GenRandomValidCustomer(zone.id);
+      // b. create customer
+      const customer = await Customer.create(genCustomer);
+      // 3. Generate and create loan
+      // a. generate loan
+      const genLoan = UnitTest.GenRandomValidLoan(customer.id);
+      genLoan.amount = RandomVal.GenRandomBigAmount();
+      genLoan.balance = 0;
+      genLoan.interestRate = 0.5;
+      genLoan.status = "paid";
+      // b. create loan
+      const loan = await Loan.create(genLoan);
+
+      // 4. Generate random amount and account id
+      const amount = RandomVal.GenRandomSmallAmount();
+      const account = RandomVal.GenRandomInteger(MAX);
+
+      // 5. Send request
+      const res = await request(server)
+        .patch("/api/v1/loans/recover")
+        .set("Authorization", header)
+        .send({ id: loan.id, amount, account });
+      // 6. Expect result
+      expect(res.status).toBe(400);
     });
   });
 });
