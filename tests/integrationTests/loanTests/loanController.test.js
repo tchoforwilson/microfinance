@@ -378,5 +378,83 @@ describe("LoanController_Tests", () => {
       // 6. Expect result
       expect(res.status).toBe(400);
     });
+    it("Test_RecoverLoan It should return 400 if the account balance is insufficient", async () => {
+      // 1. Generate and create a valid zone
+      // .a generate a valid zone
+      const genZone = UnitTest.GenRandomValidZone(adminUser.id);
+      // b. create zone
+      const zone = await Zone.create(genZone);
+      // 2. Generate and create two valid customer
+      // a. generate customer
+      const genCustomer = UnitTest.GenRandomValidCustomer(zone.id);
+      // b. create customers
+      const customer = await Customer.create(genCustomer);
+      // 3. Generate and create two random account
+      // a. generate account
+      const genAccount = UnitTest.GenRandomValidCustomerAccount(customer.id);
+      genAccount.balance = 0;
+      // b. create account
+      const account = await Account.create(genAccount);
+
+      // 4. Generate and create loan
+      // a. generate loan
+      const genLoan = UnitTest.GenRandomValidLoan(customer.id);
+      genLoan.amount = RandomVal.GenRandomBigAmount();
+      genLoan.balance = genLoan.amount;
+      genLoan.interestRate = 0.5;
+      // b. create loan
+      const loan = await Loan.create(genLoan);
+
+      // 4. Generate random amount and account id
+      const loanAmount = RandomVal.GenRandomSmallAmount();
+
+      // 5. Send request
+      const res = await request(server)
+        .patch("/api/v1/loans/recover")
+        .set("Authorization", header)
+        .send({ id: loan.id, amount: loanAmount, account: account.id });
+      // 6. Expect result
+      expect(res.status).toBe(400);
+    });
+    it("Test_RecoverLoan It should return 200 if the loan is successfully recovered", async () => {
+      // 1. Generate and create a valid zone
+      // .a generate a valid zone
+      const genZone = UnitTest.GenRandomValidZone(adminUser.id);
+      // b. create zone
+      const zone = await Zone.create(genZone);
+      // 2. Generate and create two valid customer
+      // a. generate customer
+      const genCustomer = UnitTest.GenRandomValidCustomer(zone.id);
+      // b. create customers
+      const customer = await Customer.create(genCustomer);
+      // 3. Generate and create two random account
+      // a. generate account
+      const genAccount = UnitTest.GenRandomValidCustomerAccount(customer.id);
+      // b. create account
+      const account = await Account.create(genAccount);
+
+      // 4. Generate and create loan
+      // a. generate loan
+      const genLoan = UnitTest.GenRandomValidLoan(customer.id);
+      genLoan.amount = RandomVal.GenRandomSmallAmount();
+      genLoan.balance = genLoan.amount;
+      genLoan.interestRate = 0.5;
+      // b. create loan
+      const loan = await Loan.create(genLoan);
+
+      // 4. Generate random amount and account id
+      const loanAmount = RandomVal.GenRandomSmallAmount();
+
+      // 5. Send request
+      const res = await request(server)
+        .patch("/api/v1/loans/recover")
+        .set("Authorization", header)
+        .send({ id: loan.id, amount: loanAmount, account: account.id });
+      // 6. Expect result
+      expect(res.status).toBe(200);
+      const { data } = JSON.parse(res.text);
+      expect(data.account).toBe(account.id);
+      expect(data.loan.status).toBe("unfinished");
+    });
   });
 });
