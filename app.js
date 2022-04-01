@@ -31,7 +31,7 @@ app.use("/api/v1/zones", zoneRouter);
 app.use("/api/v1/customers", customerRouter);
 app.use("/api/v1/accounts", accountRouter);
 app.use("/api/v1/sources", sourceRouter);
-app.use("/api/v1/transaction", transactionRouter);
+app.use("/api/v1/transactions", transactionRouter);
 app.use("/api/v1/loans", loanRouter);
 // INVALID ROUTES
 app.all("*", (req, res, next) => {
