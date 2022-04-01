@@ -239,14 +239,41 @@ describe("TransactionController_Tests", () => {
       genAccount.active = false; // set account to inactive
       // b. create account
       const account = await Account.create(genAccount);
-      // 2. Generate and integer amount between 100 and 400
+      // 4. Generate and integer amount between 100 and 400
       const amount = RandomVal.GenRandomSmallAmount();
-      // 3. Send request
+      // 5. Send request
       const res = await request(server)
         .post("/api/v1/transactions/deposit")
         .set("Authorization", header)
         .send({ amount, account: account.id });
-      // 4. expect result
+      // 6. expect result
+      expect(res.status).toBe(400);
+    });
+    it("Test_Deposit It should return 400 if the account is not a customer account", async () => {
+      // 1. Generate and create a valid zone
+      // a. generate zone
+      const genZone = UnitTest.GenRandomValidZone(adminUser.id);
+      // b. create zone
+      const zone = await Zone.create(genZone);
+      // 2. Generate and create random valid customer
+      // a. generate customer
+      const genCustomer = UnitTest.GenRandomValidCustomer(zone.id);
+      // b. create customer
+      const customer = await Customer.create(genCustomer);
+      // 3. Generate and create a random valid customer account
+      // a. generate account
+      const genAccount = UnitTest.GenRandomValidCustomerAccount(customer.id);
+      genAccount.type = "user"; // set account to a user account
+      // b. create account
+      const account = await Account.create(genAccount);
+      // 4. Generate and integer amount between 100 and 400
+      const amount = RandomVal.GenRandomSmallAmount();
+      // 5. Send request
+      const res = await request(server)
+        .post("/api/v1/transactions/deposit")
+        .set("Authorization", header)
+        .send({ amount, account: account.id });
+      // 6. expect result
       expect(res.status).toBe(400);
     });
   });
