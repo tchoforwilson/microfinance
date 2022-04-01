@@ -378,5 +378,32 @@ describe("TransactionController_Tests", () => {
       // 4. Expect result
       expect(res.status).toBe(400);
     });
+    it("Test_Withdraw It should return 400 for insufficient customer funds", async () => {
+      // 1. Generate and create a valid zone
+      // a. generate zone
+      const genZone = UnitTest.GenRandomValidZone(adminUser.id);
+      // b. create zone
+      const zone = await Zone.create(genZone);
+      // 2. Generate and create random valid customer
+      // a. generate customer
+      const genCustomer = UnitTest.GenRandomValidCustomer(zone.id);
+      // b. create customer
+      const customer = await Customer.create(genCustomer);
+      // 3. Generate and create a random valid customer account
+      // a. generate account
+      const genAccount = UnitTest.GenRandomValidCustomerAccount(customer.id);
+      genAccount.balance = 20000; // set balance to 20000
+      // b. create account
+      const account = await Account.create(genAccount);
+      // 4. Generate and integer amount between 100 and 400
+      const amount = 25000;
+      // 5. Send request
+      const res = await request(server)
+        .post("/api/v1/transactions/withdraw")
+        .set("Authorization", header)
+        .send({ amount, account: account.id });
+      // 6. Expect result
+      expect(res.status).toBe(400);
+    });
   });
 });
