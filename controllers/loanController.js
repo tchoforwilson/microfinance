@@ -40,6 +40,7 @@ export const createLoan = catchAsync(async (req, res, next) => {
   // 5. Make loan
   const interest = amount * (interestRate / 100);
   const totalAmount = amount + interest;
+
   // 6. Save loan
   const loan = await Loan.create({
     amount: totalAmount,
@@ -167,14 +168,16 @@ export const recover = catchAsync(async (req, res, next) => {
     return next(new AppError("This account is closed!", 400));
   }
   // 8. Check if account belongs to customer
-  if (loan.customer !== account.customer) {
+  if (loan.customer !== customerAccount.customer) {
     return next(
       new AppError("This account doesn't belongs to the customer!", 400)
     );
   }
   // 9. Check that the account balance is greater than or equal the amount
   if (customerAccount.balance < amount) {
-    return next(new AppError(`Insufficient funds! ${account.balance}`, 400));
+    return next(
+      new AppError(`Insufficient funds! ${customerAccount.balance}`, 400)
+    );
   }
 
   // 10. Perform recovery
