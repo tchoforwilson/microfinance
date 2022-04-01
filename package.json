@@ -36,6 +36,7 @@
     "destroy": "^1.0.4",
     "doctypes": "^1.1.0",
     "ecdsa-sig-formatter": "^1.0.11",
+    "edit-json-file": "^1.7.0",
     "ee-first": "^1.1.1",
     "encodeurl": "^1.0.2",
     "es6-promisify": "^7.0.0",
@@ -152,7 +153,7 @@
     "xss-filters": "^1.2.6"
   },
   "scripts": {
-    "test": "jest --watchAll --verbose",
+    "test": "jest --watchAll --verbose --coverage",
     "start": "nodemon server.js",
     "start:prod": "NODE_ENV=production nodemon index.js",
     "start:test": "NODE_ENV=test nodemon index.js",
