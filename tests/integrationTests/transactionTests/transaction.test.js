@@ -192,5 +192,18 @@ describe("TransactionController_Tests", () => {
       // 4. expect result
       expect(res.status).toBe(400);
     });
+    it("Test_Deposit It should return 400 if the creditor balance if insufficient", async () => {
+      // 1. Generate random number as account id
+      const id = RandomVal.GenRandomInteger(MAX);
+      // 2. Generate and integer amount between 100 and 400
+      const amount = RandomVal.GenRandomBigAmount() * 4;
+      // 3. Send request
+      const res = await request(server)
+        .post("/api/v1/transactions/deposit")
+        .set("Authorization", header)
+        .send({ amount, account: id });
+      // 4. expect result
+      expect(res.status).toBe(400);
+    });
   });
 });
