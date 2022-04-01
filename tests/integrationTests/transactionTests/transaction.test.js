@@ -23,6 +23,7 @@ describe("TransactionController_Tests", () => {
   let server;
   let adminUser = {};
   let header;
+  let sourceAccount;
   // 1. Call the server
   beforeAll(async () => {
     const mod = await import("../../../index");
@@ -33,7 +34,7 @@ describe("TransactionController_Tests", () => {
     await Account.sequelize.authenticate();
     await Transaction.sequelize.authenticate();
     adminUser = await createAdminUser("manager");
-    await createSourceAccount();
+    sourceAccount = await createSourceAccount();
     header = getHeader(adminUser);
   });
 
@@ -50,11 +51,8 @@ describe("TransactionController_Tests", () => {
   });
   beforeEach(async () => {
     // credit the source account
-    const amount = RandomVal.GenRandomBigAmount();
-    await Account.update(
-      { balance: amount },
-      { where: { [Op.and]: [{ name: "Source" }, { type: "source" }] } }
-    );
+    sourceAccount.balance = RandomVal.GenRandomBigAmount();
+    await sourceAccount.save();
   });
   afterEach(async () => {
     await Transaction.destroy({ where: {}, truncate: false });
@@ -71,21 +69,30 @@ describe("TransactionController_Tests", () => {
   });
   describe("POST /api/v1/transactions/creditCollector", () => {
     it("Test_CreditCollector It should return 400 for insufficient funds in the source account", async () => {
-      // 1. Create and generate random valid user
-      // a. generate user (collector)
-      const genUser = UnitTest.GenRandomValidUserWithPassword();
-      genUser.role = "collector";
-      // b. create user
-      const user = await User.create(genUser);
+      // 1. Generate random number as id
+      const id = RandomVal.GenRandomInteger(MAX);
       // 2. Generate and amount greater than source account balance
       const amount = RandomVal.GenRandomBigAmount() * 4;
       // 3. Send request
       const res = await request(server)
         .post("/api/v1/transactions/creditCollector")
         .set("Authorization", header)
-        .send({ amount, collector: user.id });
+        .send({ amount, collector: id });
       // 4. expect result
       expect(res.status).toBe(400);
+    });
+    it("Test_CreditCollector It should return 404 if the collector is not found", async () => {
+      // 1. Generate random number as collector id
+      const id = RandomVal.GenRandomInteger(MAX);
+      // 2. Generate random valid amount
+      const amount = RandomVal.GenRandomSmallAmount();
+      // 3. Send request
+      const res = await request(server)
+        .post("/api/v1/transactions/creditCollector")
+        .set("Authorization", header)
+        .send({ amount, collector: id });
+      // 4. expect result
+      expect(res.status).toBe(404);
     });
   });
 });
