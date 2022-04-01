@@ -457,4 +457,39 @@ describe("LoanController_Tests", () => {
       expect(data.loan.status).toBe("unfinished");
     });
   });
+  describe("GET /api/v1/loans/sumUnpaidLoan", () => {
+    it("Test_GetSumUnPaidLoan It should return 200 for the sum of unpaid loans", async () => {
+      // 1. Generate and create a valid zone
+      // .a generate a valid zone
+      const genZone = UnitTest.GenRandomValidZone(adminUser.id);
+      // b. create zone
+      const zone = await Zone.create(genZone);
+      // 2. Generate and create two valid customer
+      // a. generate customer
+      const genCustomer = UnitTest.GenRandomValidCustomer(zone.id);
+      // b. create customers
+      const customer = await Customer.create(genCustomer);
+
+      // 3. Generate and create loan
+      for (var i = 0; i < MIN; i++) {
+        // a. generate loan
+        const genLoan = UnitTest.GenRandomValidLoan(customer.id);
+        genLoan.amount = RandomVal.GenRandomSmallAmount();
+        genLoan.balance = genLoan.amount;
+        // set array of interestRate
+        const interestRates = [0.5, 0.75, 0.95, 0.65];
+        genLoan.interestRate =
+          RandomVal.GenRandomSingleItemFromArray(interestRates);
+        await Loan.create(genLoan);
+      }
+      // 4. Send request
+      const res = await request(server)
+        .get("/api/v1/loans/sumUnpaidLoan")
+        .set("Authorization", header);
+      // 5. Expect result
+      expect(res.status).toBe(200);
+      const { data } = JSON.parse(res.text);
+      expect(data.sum).notNull;
+    });
+  });
 });
