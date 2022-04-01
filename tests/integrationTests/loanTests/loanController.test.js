@@ -140,7 +140,7 @@ describe("LoanController_Tests", () => {
       expect(data.loan.status).toBe("unpaid");
     });
   });
-  describe("POST /api/v1/loans/prepayment", () => {
+  describe("PATCH /api/v1/loans/prepayment", () => {
     it("Test_Prepayment It should return 404 if the loan is not found", async () => {
       // 1. Generate random valid number as id
       const id = RandomVal.GenRandomInteger(MAX);
@@ -213,6 +213,22 @@ describe("LoanController_Tests", () => {
       const { data } = JSON.parse(res.text);
       // TODO: check that loan balance is less than loan amount
       //expect(data.loan.balance).toBeLestThan(genLoan.amount);
+    });
+  });
+  describe("PATCH /api/v1/loans/recover", () => {
+    it("Test_RecoverLoan It should return 404 if the loan is not found", async () => {
+      // 1. Generate random number as id and account and amount
+      const id = RandomVal.GenRandomInteger(MAX);
+      const account = RandomVal.GenRandomInteger(MAX);
+      const amount = RandomVal.GenRandomInteger(MAX);
+
+      // 2. send request
+      const res = await request(server)
+        .patch("/api/v1/loans/recover")
+        .set("Authorization", header);
+
+      // 3. Expect result
+      expect(res.status).toBe(404);
     });
   });
 });
