@@ -98,7 +98,7 @@ export const deposit = catchAsync(async (req, res, next) => {
   if (req.user.account.balance < amount) {
     return next(
       new AppError(
-        `Insufficient funds! Balance: ${currentAccount.balance} FCFA`,
+        `Insufficient funds! Balance: ${req.user.account.balance} FCFA`,
         400
       )
     );
@@ -204,7 +204,7 @@ export const withdraw = catchAsync(async (req, res, next) => {
   });
 });
 
-export const getTransaction = factory.getOne(Transaction, excludedFields);
+export const getTransaction = factory.getOne(Transaction, ...excludedFields);
 export const getTransactions = factory.getAll(Transaction);
 
 export const performMonthlyTariff = catchAsync(async (req, res, next) => {
