@@ -310,4 +310,19 @@ describe("TransactionController_Tests", () => {
       expect(customerAccount.balance).toEqual(amount);
     });
   });
+  describe("POST /api/v1/transactions/withdraw", () => {
+    it("Test_Withdraw It should return 404 for account not found", async () => {
+      // 1. Generate random number as id
+      const id = RandomVal.GenRandomInteger(MAX);
+      // 2. Generate random small amount
+      const amount = RandomVal.GenRandomSmallAmount();
+      // 3. Send request
+      const res = await request(server)
+        .post("/api/v1/transactions/withdraw")
+        .set("Authorization", header)
+        .send({ amount, account: id });
+      // 4. Expect result
+      expect(res.status).toBe(404);
+    });
+  });
 });
