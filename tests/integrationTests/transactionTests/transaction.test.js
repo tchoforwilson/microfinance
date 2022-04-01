@@ -94,5 +94,22 @@ describe("TransactionController_Tests", () => {
       // 4. expect result
       expect(res.status).toBe(404);
     });
+    it("Test_CreditCollector It should return 400 if the user is inactive", async () => {
+      // 1. Generate and create random valid user
+      // a. generate random user with password
+      const genUser = UnitTest.GenRandomValidUserWithPassword();
+      genUser.active = false; // set user to inactive
+      // b. create user
+      const user = await User.create(genUser);
+      // 2. generate random small amount
+      const amount = RandomVal.GenRandomSmallAmount();
+      // 3. Send request
+      const res = await request(server)
+        .post("/api/v1/transactions/creditCollector")
+        .set("Authorization", header)
+        .send({ amount, collector: user.id });
+      // 4. expect result
+      expect(res.status).toBe(400);
+    });
   });
 });
