@@ -128,5 +128,28 @@ describe("TransactionController_Tests", () => {
       // 4. expect result
       expect(res.status).toBe(400);
     });
+    it("Test_CreditCollector It should return 400 if the user account is closed", async () => {
+      // 1. Generate and create random valid user
+      // a. generate random user with password
+      const genUser = UnitTest.GenRandomValidUserWithPassword();
+      genUser.role = "collector"; // set user role to collector
+      // b. create user
+      const user = await User.create(genUser);
+      // 2. Generate and create user account
+      // a. generate user account
+      const genUserAccount = UnitTest.GenRandomValidUserAccount(user.id);
+      genUserAccount.active = false; // set account to inactive or false
+      // b. create user account
+      await Account.create(genUserAccount);
+      // 3. generate random small amount
+      const amount = RandomVal.GenRandomSmallAmount();
+      // 4. Send request
+      const res = await request(server)
+        .post("/api/v1/transactions/creditCollector")
+        .set("Authorization", header)
+        .send({ amount, collector: user.id });
+      // 5. expect result
+      expect(res.status).toBe(400);
+    });
   });
 });
