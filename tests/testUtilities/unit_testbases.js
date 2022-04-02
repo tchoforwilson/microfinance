@@ -16,7 +16,7 @@ export const GenRandomValidUser = () => {
   user.firstname = GenRandomVal.GenRandomValidString(smallMaxLength);
   user.lastname = GenRandomVal.GenRandomValidString(smallMaxLength);
   user.gender = GenRandomVal.GenRandomValidGender();
-  user.identity_number = GenRandomVal.GenRandomValidIDNumber();
+  user.identity = GenRandomVal.GenRandomValidIDNumber();
   user.contact = GenRandomVal.GenRandomValidContact("+237");
   user.email = GenRandomVal.GenRandomValidEmail();
   user.address = GenRandomVal.GenRandomValidText(bigMaxLength);
@@ -33,15 +33,13 @@ export const GenRandomValidUser = () => {
 export const GenRandomValidUserWithPassword = () => {
   let password = GenRandomVal.GenRandomValidString(secretLength);
   const user = GenRandomValidUser();
-  Object.assign(user, { password, password_confirm: password });
+  Object.assign(user, { password, passwordConfirm: password });
   return user;
 };
 
 /**
  * Generate valid users
  * @param {Number} max -> Maximum number of user to be generated
- * @param {Array} addressIds -> address ids
- * @param {Array} accountIds -> account ids
  * @returns {Array} users -> Generated users
  */
 export const GenRandValidUsers = (max) => {
@@ -52,12 +50,12 @@ export const GenRandValidUsers = (max) => {
   return users;
 };
 
-export const GenRandomValidUserAccount = (userId, type = "user") => {
+export const GenRandomValidUserAccount = (userId) => {
   let account = {};
-  account.account_name = GenRandomVal.GenRandomValidString(smallMaxLength);
-  account.type = type;
+  account.name = GenRandomVal.GenRandomValidString(smallMaxLength);
+  account.type = "user";
   account.balance = parseInt(GenRandomVal.GenRandomSmallAmount(), 10);
-  account.user_id = parseInt(userId, 10);
+  account.user = parseInt(userId, 10);
   return account;
 };
 
@@ -72,7 +70,7 @@ export const GenRandomValidZone = (userId) => {
   zone.description = GenRandomVal.GenRandomValidText(bigMaxLength);
   zone.longitude = GenRandomVal.GenRandomIntegerInRange(-90, 90);
   zone.latitude = GenRandomVal.GenRandomIntegerInRange(-180, 180);
-  zone.user_id = userId;
+  zone.user = userId;
   return zone;
 };
 
@@ -94,50 +92,100 @@ export const GenRandomValidZones = (max, userIds) => {
 
 /**
  * Generate a random valid customer
- * @param {Number} addressId -> customer addres ID
  * @param {Number} zoneId -> Customer zone ID
  * @returns customer
  */
-export const GenRandomValidCustomer = (addressId, zoneId) => {
+export const GenRandomValidCustomer = (zoneId) => {
   let customer = {};
   customer.firstname = GenRandomVal.GenRandomValidString(smallMaxLength);
   customer.lastname = GenRandomVal.GenRandomValidString(smallMaxLength);
-  customer.identity_number = GenRandomVal.GenRandomValidIDNumber();
+  customer.gender = GenRandomVal.GenRandomValidGender();
+  customer.identity = GenRandomVal.GenRandomValidIDNumber();
   customer.contact = GenRandomVal.GenRandomValidContact("+237");
-  customer.email = GenRandomVal.GenRandomInValidEmail();
+  customer.email = GenRandomVal.GenRandomValidEmail();
+  customer.address = GenRandomVal.GenRandomValidText(bigMaxLength);
   //customer.photo = GenRandomVal.GenRandomValidPhoto();
-  //customer.rights = GenRandomVal.GenRandomValidRights();
-  customer.address_id = addressId;
-  customer.zone_id = zoneId;
+  customer.zone = zoneId;
   return customer;
+};
+
+export const GenRandomValidCustomerAccount = (customerId) => {
+  let account = {};
+  account.name = GenRandomVal.GenRandomValidString(smallMaxLength);
+  account.type = "customer";
+  account.balance = parseInt(GenRandomVal.GenRandomBigAmount(), 10);
+  account.customer = parseInt(customerId, 10);
+  return account;
+};
+
+export const GenRandomValidCustomerAccounts = (max, customerIds) => {
+  let accounts = [];
+  for (var i = 0; i < max; i++) {
+    accounts.push(
+      GenRandomValidCustomerAccount(
+        GenRandomVal.GenRandomSingleItemFromArray(customerIds)
+      )
+    );
+  }
+  return accounts;
 };
 
 /**
  * Generate random valid customers
  * @param {Number} max -> maximum number of customers to be generated
- * @param {Array} addressIds  -> Customers addressIds
  * @param {Array} zoneIds -> customers zone IDs
  * @returns customers
  */
-export const GenRandomValidCustomers = (max, addressIds, zoneIds) => {
+export const GenRandomValidCustomers = (max, zoneIds) => {
   let customers = [];
   for (var i = 0; i < max; i++) {
-    customers.push(GenRandomValidCustomer(addressIds[i], zoneIds[i]));
+    customers.push(
+      GenRandomValidCustomer(GenRandomVal.GenRandomSingleItemFromArray(zoneIds))
+    );
   }
   return customers;
 };
 
 export const GenRandomValidSource = (zoneId) => {
   let source = {};
-  source.amount = GenRandomVal.GenRandomBigAmount();
-  source.zone_id = zoneId;
+  source.amount = GenRandomVal.GenRandomSmallAmount();
+  source.zone = zoneId;
   return source;
 };
 
-export const GenRandomValidSourcesAmount = (max, zoneIds) => {
-  let sources = {};
+export const GenRandomValidSources = (max, zoneIds) => {
+  let sources = [];
   for (var i = 0; i < max; i++) {
-    GenRandomValidSource(zoneIds[i]);
+    sources.push(
+      GenRandomValidSource(GenRandomVal.GenRandomSingleItemFromArray(zoneIds))
+    );
   }
   return sources;
+};
+
+/**
+ * Generate random valid loan
+ * @param {String} customerId
+ * @returns {Object} loan
+ */
+export const GenRandomValidLoan = (customerId) => {
+  let loan = {};
+  loan.amount = GenRandomVal.GenRandomSmallAmount();
+  // this should be generate random float
+  //loan.interestRate = GenRandomVal.GenRandomIntegerInRange(0.1, 0.9);
+  loan.customer = customerId;
+  return loan;
+};
+
+/**
+ * Generate random valid array of loans
+ * @param {Array} customerIds
+ * @returns {Array} loans
+ */
+export const GenRandomValidLoans = (customerIds) => {
+  let loans = [];
+  for (var i = 0; i < max; i++) {
+    loans.push(GenRandomVal.GenRandomSingleItemFromArray(customerIds));
+  }
+  return loans;
 };
