@@ -1,4 +1,5 @@
 "use strict";
+import bcrypt from "bcrypt";
 export default (sequelize, DataTypes) => {
   const User = sequelize.define("user", {
     id: {
@@ -6,6 +7,19 @@ export default (sequelize, DataTypes) => {
       autoIncrement: true,
       primaryKey: true,
       unique: true,
+    },
+    code: {
+      type: DataTypes.VIRTUAL,
+      get() {
+        let newCode =
+          "CECEAC" +
+          new Date(this.createdAt).getFullYear().toString().slice(3, 4) +
+          "P";
+        for (var i = 0; i < 3 - this.id.toString().length; i++) {
+          newCode += "0";
+        }
+        return newCode + this.id;
+      },
     },
     firstname: {
       type: DataTypes.STRING(30),
@@ -136,5 +150,38 @@ export default (sequelize, DataTypes) => {
       defaultValue: true,
     },
   });
+  User.beforeCreate(async (user) => {
+    if (!user.changed("password")) return;
+    user.password = await bcrypt.hash(user.password, 12);
+    user.passwordConfirm = undefined;
+  });
+  User.beforeSave((user) => {
+    if (!user.changed("password") || user.isNewRecord) return;
+    user.passwordChangedAt = Date.now() - 1000;
+  });
+  User.beforeFind((user) => {
+    //user.findAll({ where: { [Op.not]: [{ active: false }] } });
+  });
+
+  User.prototype.correctPassword = async function (
+    candidatePassword,
+    userPassword
+  ) {
+    return await bcrypt.compare(candidatePassword, userPassword);
+  };
+
+  User.prototype.changedPasswordAfter = function (JWTTimestamp) {
+    if (this.passwordChangedAt) {
+      const changedTimestamp = parseInt(
+        this.passwordChangedAt.getTime() / 1000,
+        10
+      );
+
+      return JWTTimestamp < changedTimestamp;
+    }
+
+    // False means NOT changed
+    return false;
+  };
   return User;
 };
