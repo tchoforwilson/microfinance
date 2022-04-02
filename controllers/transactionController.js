@@ -219,7 +219,7 @@ export const performMonthlyTariff = catchAsync(async (req, res, next) => {
   const { rows } = accounts; // get count and rows
 
   // 3. Check if accounts exists
-  if (!accounts) {
+  if (!accounts.count === 0) {
     return next(new AppError("No accounts found!", 404));
   }
 
@@ -235,6 +235,7 @@ export const performMonthlyTariff = catchAsync(async (req, res, next) => {
     };
     const sum = await statistic.getSum(Transaction, "amount", filter);
     const account = await Account.findByPk(row.id); // Get account
+    console.log("SUM", sum);
 
     // 4. Deduct tariff from the persons account
     const tariff = getMonthlyTariff(sum);

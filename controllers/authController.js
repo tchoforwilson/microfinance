@@ -1,6 +1,5 @@
 "use strict";
 import jwt from "jsonwebtoken";
-import bcrypt from "bcrypt";
 import { promisify } from "es6-promisify";
 import AppError from "./../utils/appError.js";
 import catchAsync from "./../utils/catchAsync.js";
@@ -115,10 +114,6 @@ export const signup = catchAsync(async (req, res, next) => {
     return next(new AppError("Already registered! Please login", 403));
   }
 
-  // hash user password
-  user.password = await bcrypt.hash(password, 12);
-  user.password_confirm = user.password;
-
   /**
    * Get user account,
    * If user role is a manage or account, then the account is the source account
@@ -143,7 +138,7 @@ export const signin = catchAsync(async (req, res, next) => {
   const user = await User.findOne({
     where: { [Op.or]: [{ email }, { contact: email }] },
     attributes: {
-      exclude: ["password_confirm", "password_changed_at"],
+      exclude: ["passwordConfirm", "passwordChangedAt"],
     },
   });
 
@@ -164,7 +159,7 @@ export const signin = catchAsync(async (req, res, next) => {
     return next(new AppError("Please signup!", 400));
   }
 
-  if (!userData || !(await correctPassword(password, userData.password))) {
+  if (!userData || !(await user.correctPassword(password, userData.password))) {
     return next(new AppError("Incorrect email or password", 401));
   }
 
@@ -227,7 +222,7 @@ export const protect = catchAsync(async (req, res, next) => {
   //currentUser.zones = await currentUser.getZones();
 
   // 4) Check if user changed password after the token was issued
-  if (changedPasswordAfter(decoded.iat, currentUser)) {
+  if (currentUser.changedPasswordAfter(decoded.iat, currentUser)) {
     return next(
       new AppError("User recently changed password! Please log in again.", 401)
     );
@@ -247,7 +242,7 @@ export const updateMyPassword = catchAsync(async (req, res, next) => {
   const user = User.findByPk(req.user.id);
 
   // 3. check password
-  if (!correctPassword(currentPassword, user.password)) {
+  if (!(await user.correctPassword(currentPassword, user.password))) {
     return next(new AppError("Your current password is wrong!", 401));
   }
 
@@ -257,9 +252,6 @@ export const updateMyPassword = catchAsync(async (req, res, next) => {
       new AppError("Confirmed password doesn't match password!", 400)
     );
   }
-  // 5. Update user passwords
-  user.password = await bcrypt.hash(password, 12);
-  user.passwordConfirm = user.password;
   // save new password
   await user.save();
 
@@ -289,20 +281,4 @@ export const hasRight = (right) => {
     }
     next();
   };
-};
-
-const correctPassword = async function (candidatePassword, userPassword) {
-  return await bcrypt.compare(candidatePassword, userPassword);
-};
-
-const changedPasswordAfter = function (JWTTimestamp, user) {
-  if (user.passwordChangedAt) {
-    const changedTimestamp = parseInt(
-      user.passwordChangedAt.getTime() / 1000,
-      10
-    );
-    return JWTTimestamp < changedTimestamp;
-  }
-  // False means NOT changed
-  return false;
 };
