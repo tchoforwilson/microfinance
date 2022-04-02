@@ -16,7 +16,7 @@ const roles = ["accountant", "collector"];
 const rights = ["CloseSession", "OpenSession", "CreateZone"];
 
 export const GenRandomInteger = (max) => {
-  return randomInteger(max);
+  return randomInteger(1, max);
 };
 
 export const GenRandomBoolean = () => {
