@@ -12,7 +12,6 @@ const excludedFields = [
   "passwordConfirm",
   "active",
   "passwordChangedAt",
-  "createdAt",
   "updatedAt",
 ];
 
