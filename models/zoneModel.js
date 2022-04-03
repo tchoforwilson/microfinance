@@ -6,6 +6,17 @@ export default (sequelize, DataTypes) => {
       autoIncrement: true,
       primaryKey: true,
     },
+    code: {
+      type: DataTypes.VIRTUAL,
+      get() {
+        let code = "BLC";
+        for (var i = 0; i < 3 - this.id.toString().length; i++) {
+          code += "0";
+        }
+        code += this.id.toString();
+        return code;
+      },
+    },
     name: {
       type: DataTypes.STRING,
       allowNull: false,
