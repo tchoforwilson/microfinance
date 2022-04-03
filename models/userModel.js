@@ -12,9 +12,7 @@ export default (sequelize, DataTypes) => {
       type: DataTypes.VIRTUAL,
       get() {
         let newCode =
-          "CECEAC" +
-          new Date(this.createdAt).getFullYear().toString().slice(3, 4) +
-          "P";
+          "CECEAC" + new Date().getFullYear().toString().slice(2, 4) + "P";
         for (var i = 0; i < 3 - this.id.toString().length; i++) {
           newCode += "0";
         }
