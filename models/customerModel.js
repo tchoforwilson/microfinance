@@ -6,6 +6,17 @@ export default (sequelize, DataTypes) => {
       primaryKey: true,
       unique: true,
     },
+    code: {
+      type: DataTypes.VIRTUAL,
+      get() {
+        let code = "C";
+        for (var i = 0; i < 4 - this.id.toString().length; i++) {
+          code += "0";
+        }
+        code += this.id.toString();
+        return code;
+      },
+    },
     firstname: {
       type: DataTypes.STRING(30),
       allowNull: false,
