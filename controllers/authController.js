@@ -161,7 +161,7 @@ export const signin = catchAsync(async (req, res, next) => {
     return next(new AppError("Please signup!", 400));
   }
 
-  if (!userData || !(await user.correctPassword(password, userData.password))) {
+  if (!(await user.correctPassword(password, user.password))) {
     return next(new AppError("Incorrect email or password", 401));
   }
 
