@@ -148,10 +148,10 @@ export default (sequelize, DataTypes) => {
       defaultValue: true,
     },
   });
-  User.beforeCreate(async (user) => {
+  User.beforeSave(async (user) => {
     if (!user.changed("password")) return;
     user.password = await bcrypt.hash(user.password, 12);
-    user.passwordConfirm = undefined;
+    user.passwordConfirm = user.password;
   });
   User.beforeSave((user) => {
     if (!user.changed("password") || user.isNewRecord) return;

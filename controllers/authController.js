@@ -123,6 +123,8 @@ export const signup = catchAsync(async (req, res, next) => {
   userData = { ...userData, account };
 
   // Save user password
+  user.password = password;
+  user.passwordConfirm = passwordConfirm;
   await user.save();
   createSendToken(userData, 201, res);
 });
@@ -237,9 +239,13 @@ export const protect = catchAsync(async (req, res, next) => {
 export const updateMyPassword = catchAsync(async (req, res, next) => {
   //1. Get passwords
   const { currentPassword, password, passwordConfirm } = req.body;
+  // a. Check for currentPassword
+  if (!currentPassword) {
+    return next(new AppError("Current password required", 400));
+  }
 
   // 2. Check passwords
-  const user = User.findByPk(req.user.id);
+  const user = await User.findByPk(req.user.id);
 
   // 3. check password
   if (!(await user.correctPassword(currentPassword, user.password))) {
@@ -253,9 +259,12 @@ export const updateMyPassword = catchAsync(async (req, res, next) => {
     );
   }
   // save new password
+  // 5) If so, update password
+  user.password = password;
+  user.passwordConfirm = passwordConfirm;
   await user.save();
 
-  // 5. Log in user and send JWT
+  // 6. Log in user and send JWT
   createSendToken(user, 200, res);
 });
 
