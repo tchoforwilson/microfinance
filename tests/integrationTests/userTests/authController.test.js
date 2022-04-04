@@ -3,6 +3,11 @@ import request from "supertest";
 import bcrypt from "bcrypt";
 import * as RandomVal from "./../../testUtilities/GenRandomVal.js";
 import * as UnitTest from "./../../testUtilities/unit_testbases.js";
+import {
+  createAdminUser,
+  getHeader,
+  createSourceAccount,
+} from "./../../testUtilities/testUtils.js";
 import database from "./../../../config/database.js";
 
 const User = database.user;
@@ -20,13 +25,15 @@ describe("AuthController_Tests", () => {
     await User.sequelize.authenticate();
     await Account.sequelize.authenticate();
     // create source account for accountant and manager
-    await Account.create({ type: "source", name: "source" });
+    const adminUser = await createAdminUser("manager");
+    await createSourceAccount();
   });
 
   afterAll(async () => {
     if (server) {
       await server.close();
     }
+    database.sequelize.close();
   });
   afterEach(async () => {
     await Account.destroy({ where: {}, truncate: false });
@@ -156,10 +163,10 @@ describe("AuthController_Tests", () => {
     });
     it("Test_Signin It Should return 200 for successful login", async () => {
       // 1. Generate valid user
-      const user = UnitTest.GenRandomValidUserWithPassword();
+      let user = UnitTest.GenRandomValidUserWithPassword();
 
       // 2. hash password before saving user
-      const password = user.password; // save unhashed password
+      const newPassword = user.password; // save unhashed password
       user.password = await bcrypt.hash(user.password, 12);
       user.passwordConfirm = user.password;
 
@@ -170,12 +177,12 @@ describe("AuthController_Tests", () => {
       const account = UnitTest.GenRandomValidUserAccount(newUser.id, "user");
 
       // 5. Save account in the database
-      const newAccount = await Account.create(account);
+      await Account.create(account);
 
       // 4. Call test
       const res = await request(server)
         .post("/api/v1/users/signin")
-        .send({ email: user.email, password });
+        .send({ email: user.email, password: newPassword });
       expect(res.status).toBe(200);
       const data = JSON.parse(res.text);
       expect(data.status).toBe("success");
@@ -193,4 +200,36 @@ describe("AuthController_Tests", () => {
       }
     });
   });
+  // /**********************/
+  // /**UPDATE MY PASSWORD*/
+  // /********************/
+  // describe("PATCH /api/v1/users/updateMyPassword", () => {
+  //   it.only("Test_UpdateMyPassword It should return 401 if the current password is wrong", async () => {
+  //     // 1. Generate valid user
+  //     let user = UnitTest.GenRandomValidUserWithPassword();
+
+  //     // 2. hash password before saving user
+  //     const password = user.password; // save unhashed password
+  //     user.password = await bcrypt.hash(user.password, 12);
+  //     user.passwordConfirm = user.password;
+
+  //     // 3. Save user in the database
+  //     const newUser = await User.create(user);
+
+  //     // 4. Generate random valid account
+  //     const account = UnitTest.GenRandomValidUserAccount(newUser.id, "user");
+
+  //     // 5. Save account in the database
+  //     await Account.create(account);
+
+  //     // 4. Call test
+  //     const res = await request(server)
+  //       .post("/api/v1/users/signin")
+  //       .send({ email: user.email, password });
+  //     //expect(res.status).toBe(200);
+  //     console.log(res.text);
+  //     const data = JSON.parse(res.text);
+  //     //expect(data.status).toBe("success");
+  //   });
+  // });
 });
