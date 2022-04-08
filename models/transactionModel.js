@@ -9,11 +9,11 @@ export default (sequelize, DataTypes) => {
     },
     date: {
       type: DataTypes.DATEONLY,
-      defaultValue: Date.now(),
+      defaultValue: DataTypes.NOW,
     },
     time_done: {
       type: DataTypes.DATE,
-      defaultValue: Date.now(),
+      defaultValue: DataTypes.NOW,
     },
     type: {
       type: DataTypes.ENUM,

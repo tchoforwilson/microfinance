@@ -49,7 +49,7 @@ export default (sequelize, DataTypes) => {
     },
     dateOpened: {
       type: DataTypes.DATEONLY,
-      defaultValue: Date.now(),
+      defaultValue: DataTypes.NOW,
     },
     dateClosed: {
       type: DataTypes.DATEONLY,
