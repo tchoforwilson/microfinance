@@ -55,7 +55,7 @@ export const getOne = (Model, ...excludedFields) =>
     res.status(200).json({
       status: "success",
       data: {
-        data: doc,
+        doc,
       },
     });
   });
@@ -104,7 +104,7 @@ export const getAll = (Model) =>
 export const updateOne = (Model, ...fields) =>
   catchAsync(async (req, res, next) => {
     // 1. Get document from model
-    let doc = await Model.findByPk(req.params.id);
+    const doc = await Model.findByPk(req.params.id);
 
     // 2. Check if document exist
     if (!doc) {
@@ -112,10 +112,13 @@ export const updateOne = (Model, ...fields) =>
     }
 
     // 3. Update document
-    doc = await Model.update(req.body, {
+    await Model.update(req.body, {
       where: { id: req.params.id },
       fields,
     });
+
+    // 4. Reload document
+    await doc.reload();
 
     // SEND RESPONSE
     res.status(201).json({
