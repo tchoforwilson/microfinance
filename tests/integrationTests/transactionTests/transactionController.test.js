@@ -405,7 +405,7 @@ describe("TransactionController_Tests", () => {
       // 6. Expect result
       expect(res.status).toBe(400);
     });
-    it.only("Test_Withdraw It should return 200 if the withdrawal is successful", async () => {
+    it("Test_Withdraw It should return 200 if the withdrawal is successful", async () => {
       // 1. Generate and create a valid zone
       // a. generate zone
       const genZone = UnitTest.GenRandomValidZone(adminUser.id);
@@ -433,6 +433,82 @@ describe("TransactionController_Tests", () => {
       expect(res.status).toBe(200);
       const { data } = JSON.parse(res.text);
       expect(data.transaction.type).toBe("withdrawal");
+    });
+  });
+  describe("GET /api/v1/transactions/performMonthlyTariff", () => {
+    it("Test_PerformMonthlyTaTiff It should return 404 if no account is found", async () => {
+      // 1. Destroy all account
+      await Account.destroy({ where: {}, truncate: false });
+      // 2. Send request
+      const res = await request(server)
+        .get("/api/v1/transactions/performMonthlyTariff")
+        .set("Authorization", header);
+      // 3. Expect result
+      expect(res.status).toBe(404);
+    });
+    it.only("Test_PerformMonthlyTaTiff It should return 200 if the tariff is successfully performed", async () => {
+      // 1. Generate and create random valid users
+      // a. generate users
+      const genUsers = UnitTest.GenRandValidUsers(MAX);
+      // b. create users
+      const users = await User.bulkCreate(genUsers);
+      // c. get users IDs
+      let userIds = [];
+      users.forEach((el) => {
+        userIds.push(el.id);
+      });
+      // 2. Generate and create a valid zones
+      // a. generate zones
+      const genZones = UnitTest.GenRandomValidZones(MAX, userIds);
+      // b. create zones
+      const zones = await Zone.bulkCreate(genZones);
+      // c. get zones ids
+      let zoneIds = [];
+      zones.forEach((el) => {
+        zoneIds.push(el.id);
+      });
+      // 3. Generate and create random valid customers
+      // a. generate customers
+      const genCustomers = UnitTest.GenRandomValidCustomers(MAX, zoneIds);
+      // b. create customer
+      const customers = await Customer.bulkCreate(genCustomers);
+      // c. get customers ids
+      let customersIds = [];
+      customers.forEach((el) => {
+        customersIds.push(el.id);
+      });
+      // 4. Generate and create a random valid customer account
+      // a. generate account
+      const genAccounts = UnitTest.GenRandomValidCustomerAccounts(
+        MAX,
+        customersIds
+      );
+      // b. create customers account
+      const accounts = await Account.bulkCreate(genAccounts);
+      // c. Get accounts ID
+      let accountIds = [];
+      accounts.forEach((el) => {
+        accountIds.push(el.id);
+      });
+      // 5. Generate transactions
+      let transactions = [];
+      for (var i = 0; i < genAccounts.length; i++) {
+        let transaction = {};
+        transaction.amount = RandomVal.GenRandomSmallAmount();
+        transaction.type = "deposit";
+        transaction.user = RandomVal.GenRandomSingleItemFromArray(userIds);
+        transaction.account =
+          RandomVal.GenRandomSingleItemFromArray(accountIds);
+      }
+      await Transaction.bulkCreate(transactions);
+
+      // 4. Send request
+      const res = await request(server)
+        .get("/api/v1/transactions/performMonthlyTariff")
+        .set("Authorization", header);
+      // 5. expect result
+      expect(res.status).toBe(200);
+      const { data } = JSON.parse(res.text);
     });
   });
 });
