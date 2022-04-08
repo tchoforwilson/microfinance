@@ -7,7 +7,7 @@ export default (sequelize, DataTypes) => {
     },
     date: {
       type: DataTypes.DATEONLY,
-      defaultValue: Date.now(),
+      defaultValue: DataTypes.NOW,
     },
     amount: {
       type: DataTypes.INTEGER,

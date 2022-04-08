@@ -11,12 +11,13 @@ export default (sequelize, DataTypes) => {
     code: {
       type: DataTypes.VIRTUAL,
       get() {
+        const rowId = this.getDataValue("id");
         let newCode =
           "CECEAC" + new Date().getFullYear().toString().slice(2, 4) + "P";
-        for (var i = 0; i < 3 - this.id.toString().length; i++) {
+        for (var i = 0; i < 3 - rowId.toString().length; i++) {
           newCode += "0";
         }
-        return newCode + this.id;
+        return newCode + rowId;
       },
     },
     firstname: {
