@@ -59,5 +59,10 @@ export default (sequelize, DataTypes) => {
       defaultValue: true,
     },
   });
+  Account.beforeDestroy((account) => {
+    if (account.type === "source") {
+      throw new Error("You can't delete/close source account!!!");
+    }
+  });
   return Account;
 };
