@@ -1,112 +1,138 @@
-{
-  "accounts": [
-    {
-      "id": 1,
-      "name": "Account A",
-      "type": "user",
-      "balance": 600000,
-      "active": true,
-      "date_opened": "2022-03-01",
-      "user_id": 1
-    },
-    {
-      "id": 2,
-      "name": "Account B",
-      "type": "user",
-      "balance": 405000,
-      "active": true,
-      "date_opened": "2022-02-30",
-      "user_id": 2
-    },
-    {
-      "id": 3,
-      "name": "Account C",
-      "type": "user",
-      "balance": 250000,
-      "active": true,
-      "date_opened": "2022-12-29",
-      "user_id": 3
-    },
-    {
-      "id": 4,
-      "name": "Account D",
-      "type": "user",
-      "balance": 25000,
-      "active": true,
-      "date_opened": "2022-11-20",
-      "user_id": 4
-    },
-    {
-      "id": 5,
-      "name": "Customer A",
-      "type": "customer",
-      "balance": 250000,
-      "active": true,
-      "date_opened": "2022-08-20",
-      "customer_id": 1
-    },
-    {
-      "id": 6,
-      "name": "Customer B",
-      "type": "customer",
-      "balance": 150000,
-      "active": true,
-      "date_opened": "2022-04-03",
-      "customer_id": 1
-    },
-    {
-      "id": 7,
-      "name": "Customer C",
-      "type": "customer",
-      "balance": 150800,
-      "active": true,
-      "date_opened": "2022-10-13",
-      "customer_id": 2
-    },
-    {
-      "id": 8,
-      "name": "Customer D",
-      "type": "customer",
-      "balance": 120800,
-      "active": true,
-      "date_opened": "2022-14-25",
-      "customer_id": 3
-    },
-    {
-      "id": 9,
-      "name": "Customer E",
-      "type": "customer",
-      "balance": 110800,
-      "active": true,
-      "date_opened": "2022-19-29",
-      "customer_id": 3
-    },
-    {
-      "id": 10,
-      "name": "Customer F",
-      "type": "customer",
-      "balance": 11000,
-      "active": true,
-      "date_opened": "2021-19-29",
-      "customer_id": 4
-    },
-    {
-      "id": 11,
-      "name": "Customer F",
-      "type": "customer",
-      "balance": 111000,
-      "active": true,
-      "date_opened": "2021-01-30",
-      "customer_id": 4
-    },
-    {
-      "id": 12,
-      "name": "Customer G",
-      "type": "customer",
-      "balance": 115000,
-      "active": true,
-      "date_opened": "2021-07-17",
-      "customer_id": 5
-    }
-  ]
-}
+[
+  {
+    "id": 2,
+    "name": "Account A",
+    "type": "user",
+    "balance": 600000,
+    "active": true,
+    "user": 3
+  },
+  {
+    "id": 3,
+    "name": "Account B",
+    "type": "user",
+    "balance": 405000,
+    "active": true,
+    "user": 4
+  },
+  {
+    "id": 4,
+    "name": "Account C",
+    "type": "user",
+    "balance": 250000,
+    "active": true,
+    "user": 5
+  },
+  {
+    "id": 5,
+    "name": "Account D",
+    "type": "user",
+    "balance": 25000,
+    "active": true,
+    "user": 6
+  },
+  {
+    "id": 6,
+    "name": "Account E",
+    "type": "user",
+    "balance": 45000,
+    "active": true,
+    "user": 7
+  },
+  {
+    "id": 7,
+    "name": "Account F",
+    "type": "user",
+    "balance": 50000,
+    "active": true,
+    "user": 8
+  },
+  {
+    "id": 8,
+    "name": "Customer A",
+    "type": "customer",
+    "balance": 250000,
+    "active": true,
+    "customer": 1
+  },
+  {
+    "id": 9,
+    "name": "Customer B",
+    "type": "customer",
+    "balance": 150000,
+    "active": true,
+    "customer": 2
+  },
+  {
+    "id": 10,
+    "name": "Customer C",
+    "type": "customer",
+    "balance": 150800,
+    "active": true,
+    "customer": 3
+  },
+  {
+    "id": 11,
+    "name": "Customer D",
+    "type": "customer",
+    "balance": 120800,
+    "active": true,
+    "customer": 4
+  },
+  {
+    "id": 12,
+    "name": "Customer E",
+    "type": "customer",
+    "balance": 110800,
+    "active": true,
+    "customer": 5
+  },
+  {
+    "id": 13,
+    "name": "Customer F",
+    "type": "customer",
+    "balance": 11000,
+    "active": true,
+    "customer": 6
+  },
+  {
+    "id": 14,
+    "name": "Customer G",
+    "type": "customer",
+    "balance": 111000,
+    "active": true,
+    "customer": 7
+  },
+  {
+    "id": 15,
+    "name": "Customer H",
+    "type": "customer",
+    "balance": 115000,
+    "active": true,
+    "customer": 8
+  },
+  {
+    "id": 16,
+    "name": "Customer J",
+    "type": "customer",
+    "balance": 115000,
+    "active": true,
+    "customer": 9
+  },
+  {
+    "id": 17,
+    "name": "Customer I",
+    "type": "customer",
+    "balance": 45000,
+    "active": true,
+    "customer": 10
+  },
+  {
+    "id": 18,
+    "name": "Customer I",
+    "type": "customer",
+    "balance": 95000,
+    "active": true,
+    "customer": 11
+  }
+]

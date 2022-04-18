@@ -69,7 +69,7 @@ export default (sequelize, DataTypes) => {
       },
     },
     contact: {
-      type: DataTypes.STRING(13),
+      type: DataTypes.STRING,
       allowNull: false,
       unique: true,
       validate: {

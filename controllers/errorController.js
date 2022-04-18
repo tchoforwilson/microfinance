@@ -105,7 +105,7 @@ export default (err, req, res, next) => {
       error = handleForeignKeyError(error);
     if (error.name === "SequelizeValidationError")
       error = handleValidationErrorDB(error);
-    if (error.name === "SequelizeDatabaseError") error = handleDatabaseError();
+    //if (error.name === "SequelizeDatabaseError") error = handleDatabaseError();
     if (error.name === "JsonWebTokenError") error = handleJWTError();
     if (error.name === "TokenExpiredError") error = handleJWTExpiredError();
     sendErrorProd(error, req, res);
