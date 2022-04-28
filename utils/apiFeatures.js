@@ -1,4 +1,6 @@
 "use strict";
+import database from "../config/database.js";
+const Op = database.Sequelize.Op;
 /**
  * @description Class to implement filtering, sorting, limits and pagination
  * for all input queries
@@ -53,11 +55,9 @@ export default class APIFeatures {
       this.attributes = {
         exclude: [
           "password",
-          "password_confirm",
+          "passwordConfirm",
           "active",
-          "addressAddressId",
-          "password_changed_at",
-          "createdAt",
+          "passwordChangedAt",
           "updatedAt",
         ],
       };
@@ -66,13 +66,16 @@ export default class APIFeatures {
     return this;
   }
 
-  // like() {
-  //   if (this.queryString.name) {
-  //     let condition = { name: { [Op.like]: `%${name}%` } };
-  //     this.query = this.query.findAndCountAll({ where: { condition } });
-  //   }
-  //   return this;
-  // }
+  liked() {
+    if (this.queryString.name) {
+      const condition = { [Op.iRegexp]: `${this.queryString.name}` };
+      this.queryStr = JSON.parse(this.queryStr);
+      this.queryStr["name"] = condition;
+    } else {
+      this.queryStr = {};
+    }
+    return this;
+  }
 
   paginate() {
     const page = this.queryString.page * 1 || 1;
@@ -80,7 +83,7 @@ export default class APIFeatures {
     const offset = (page - 1) * limit;
 
     this.query = this.query.findAndCountAll({
-      where: JSON.parse(this.queryStr),
+      where: this.queryStr,
       order: this.order,
       attributes: this.attributes,
       limit,
