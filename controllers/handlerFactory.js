@@ -77,6 +77,7 @@ export const getAll = (Model) =>
       .filter()
       .ordered()
       .limitAttributes()
+      .liked()
       .paginate();
 
     const docs = await features.query;
