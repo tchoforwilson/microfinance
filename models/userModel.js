@@ -8,18 +8,6 @@ export default (sequelize, DataTypes) => {
       primaryKey: true,
       unique: true,
     },
-    code: {
-      type: DataTypes.VIRTUAL,
-      get() {
-        const rowId = this.getDataValue("id");
-        let newCode =
-          "CECEAC" + new Date().getFullYear().toString().slice(2, 4) + "P";
-        for (var i = 0; i < 3 - rowId.toString().length; i++) {
-          newCode += "0";
-        }
-        return newCode + rowId;
-      },
-    },
     firstname: {
       type: DataTypes.STRING(30),
       allowNull: false,
@@ -46,11 +34,8 @@ export default (sequelize, DataTypes) => {
         },
       },
     },
-    fullname: {
-      type: DataTypes.VIRTUAL,
-      get() {
-        return `${this.firstname} ${this.lastname}`;
-      },
+    name: {
+      type: DataTypes.STRING,
     },
     gender: {
       type: DataTypes.ENUM,
@@ -158,8 +143,8 @@ export default (sequelize, DataTypes) => {
     if (!user.changed("password") || user.isNewRecord) return;
     user.passwordChangedAt = Date.now() - 1000;
   });
-  User.beforeFind((user) => {
-    //user.findAll({ where: { [Op.not]: [{ active: false }] } });
+  User.beforeSave((user) => {
+    user.name = user.firstname + " " + user.lastname;
   });
 
   User.prototype.correctPassword = async function (
