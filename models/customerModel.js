@@ -6,17 +6,6 @@ export default (sequelize, DataTypes) => {
       primaryKey: true,
       unique: true,
     },
-    code: {
-      type: DataTypes.VIRTUAL,
-      get() {
-        let code = "C";
-        for (var i = 0; i < 4 - this.id.toString().length; i++) {
-          code += "0";
-        }
-        code += this.id.toString();
-        return code;
-      },
-    },
     firstname: {
       type: DataTypes.STRING(30),
       allowNull: false,
@@ -43,11 +32,8 @@ export default (sequelize, DataTypes) => {
         },
       },
     },
-    fullname: {
-      type: DataTypes.VIRTUAL,
-      get() {
-        return `${this.firstname} ${this.lastname}`;
-      },
+    name: {
+      type: DataTypes.STRING,
     },
     gender: {
       type: DataTypes.ENUM,
@@ -111,6 +97,10 @@ export default (sequelize, DataTypes) => {
       type: DataTypes.BOOLEAN,
       defaultValue: true,
     },
+  });
+  // create customer name from first and last name
+  Customer.beforeSave((customer) => {
+    customer.name = customer.firstname + " " + customer.lastname;
   });
   return Customer;
 };
