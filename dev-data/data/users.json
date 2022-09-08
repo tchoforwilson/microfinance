@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 [
   {
     "id": 1,
@@ -163,3 +164,110 @@
     ]
   }
 ]
+=======
+{
+  "users": [
+    {
+      "user_id": 1,
+      "firstname": "Best",
+      "lastname": "Admin",
+      "gender": "male",
+      "identity_number": "00054891",
+      "contact": "+237655443321",
+      "email": "admin@example.com",
+      "address": "My address",
+      "role": "manager",
+      "rights": [
+        "openSession",
+        "closeSession",
+        "createUser",
+        "updateUser",
+        "getUser",
+        "getAllUsers",
+        "deleteUser",
+        "createCustomer",
+        "updateCustomer",
+        "getCustomer",
+        "getAllCustomers",
+        "deleteCustomer"
+      ]
+    },
+    {
+      "user_id": 2,
+      "firstname": "Mary",
+      "lastname": "James",
+      "gender": "female",
+      "identity_number": "00054892",
+      "contact": "+237655443321",
+      "email": "mary@example.com",
+      "address": "My address",
+      "role": "accountant",
+      "rights": [
+        "openSession",
+        "closeSession",
+        "createUser",
+        "updateUser",
+        "getUser",
+        "getAllUsers",
+        "deleteUser"
+      ]
+    },
+    {
+      "user_id": 3,
+      "firstname": "Good",
+      "lastname": "Annie",
+      "gender": "female",
+      "identity_number": "00054491",
+      "contact": "+237655443322",
+      "email": "annie@example.com",
+      "address": "My address",
+      "role": "collector",
+      "rights": [
+        "openSession",
+        "closeSession",
+        "createUser",
+        "updateUser",
+        "getUser",
+        "getAllUsers",
+        "deleteUser"
+      ]
+    },
+    {
+      "user_id": 4,
+      "firstname": "Andy",
+      "lastname": "Brown",
+      "gender": "male",
+      "identity_number": "00054691",
+      "contact": "+237655443324",
+      "email": "andy@example.com",
+      "address": "My address",
+      "role": "collector",
+      "rights": [
+        "createUser",
+        "updateUser",
+        "getUser",
+        "getAllUsers",
+        "deleteUser"
+      ]
+    },
+    {
+      "user_id": 5,
+      "firstname": "colby",
+      "lastname": "Brown",
+      "gender": "male",
+      "identity_number": "00054391",
+      "contact": "+237655443325",
+      "email": "colby@example.com",
+      "address": "My address",
+      "role": "collector",
+      "rights": [
+        "createUser",
+        "updateUser",
+        "getUser",
+        "getAllUsers",
+        "deleteUser"
+      ]
+    }
+  ]
+}
+>>>>>>> Added development data

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 [
   {
     "id": 1,
@@ -121,3 +122,86 @@
     "zone": 1
   }
 ]
+=======
+{
+  "customers": [
+    {
+      "customer_id": 1,
+      "firstname": "Anah",
+      "lastname": "Pride",
+      "gender": "female",
+      "identity_number": "00054841",
+      "contact": "+237655443320",
+      "email": "pride@example.com",
+      "address": "My address",
+      "zone_id": 1
+    },
+    {
+      "customer_id": 2,
+      "firstname": "Richard",
+      "lastname": "Son",
+      "gender": "male",
+      "identity_number": "00053841",
+      "contact": "+237655443321",
+      "email": "richard@example.com",
+      "address": "My address",
+      "zone_id": 1
+    },
+    {
+      "customer_id": 3,
+      "firstname": "Mason",
+      "lastname": "Paul",
+      "gender": "male",
+      "identity_number": "00043841",
+      "contact": "+237655443322",
+      "email": "mason@example.com",
+      "address": "My address",
+      "zone_id": 1
+    },
+    {
+      "customer_id": 4,
+      "firstname": "Benjamin",
+      "lastname": "Cyrille",
+      "gender": "male",
+      "identity_number": "00042841",
+      "contact": "+237655443323",
+      "email": "cyrille@example.com",
+      "address": "My address",
+      "zone_id": 2
+    },
+    {
+      "customer_id": 5,
+      "firstname": "Buzz",
+      "lastname": "Rayman",
+      "gender": "male",
+      "identity_number": "00047841",
+      "contact": "+237655443324",
+      "email": "buzz@example.com",
+      "address": "My address",
+      "zone_id": 2
+    },
+    {
+      "customer_id": 6,
+      "firstname": "Sami",
+      "lastname": "Sandi",
+      "gender": "female",
+      "identity_number": "00067841",
+      "contact": "+237655443325",
+      "email": "sami@example.com",
+      "address": "My address",
+      "zone_id": 3
+    },
+    {
+      "customer_id": 7,
+      "firstname": "Rice",
+      "lastname": "Jason",
+      "gender": "male",
+      "identity_number": "00067941",
+      "contact": "+237655443326",
+      "email": "rice@example.com",
+      "address": "My address",
+      "zone_id": 4
+    }
+  ]
+}
+>>>>>>> Added development data
