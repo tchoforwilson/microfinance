@@ -1,5 +1,5 @@
 export default (sequelize, DataTypes) => {
-  const Customer = sequelize.define("customer", {
+  const Customer = sequelize.define('customer', {
     id: {
       type: DataTypes.INTEGER,
       autoIncrement: true,
@@ -11,24 +11,27 @@ export default (sequelize, DataTypes) => {
       allowNull: false,
       validate: {
         notNull: {
-          msg: "First name required!",
+          msg: 'First name required!',
         },
         isAlpha: {
           args: true,
-          msg: "First name invalid!",
+          msg: 'First name invalid!',
         },
       },
+    },
+    middlename: {
+      type: DataTypes.STRING(30),
     },
     lastname: {
       type: DataTypes.STRING(30),
       allowNull: false,
       validate: {
         notNull: {
-          msg: "Last name required!",
+          msg: 'Last name required!',
         },
         isAlpha: {
           args: true,
-          msg: "Last name invalid!",
+          msg: 'Last name invalid!',
         },
       },
     },
@@ -37,7 +40,7 @@ export default (sequelize, DataTypes) => {
     },
     gender: {
       type: DataTypes.ENUM,
-      values: ["male", "female"],
+      values: ['male', 'female'],
     },
     identity: {
       type: DataTypes.STRING(9),
@@ -45,11 +48,11 @@ export default (sequelize, DataTypes) => {
       unique: true,
       validate: {
         notNull: {
-          msg: "Customer identity required!",
+          msg: 'Customer identity required!',
         },
         isNumeric: {
           args: true,
-          msg: "Invalid identity number!",
+          msg: 'Invalid identity number!',
         },
         len: 9,
       },
@@ -61,7 +64,7 @@ export default (sequelize, DataTypes) => {
       validate: {
         isNumeric: {
           args: true,
-          msg: "Please provide numeric contact!",
+          msg: 'Please provide numeric contact!',
         },
         len: [9, 13],
       },
@@ -73,7 +76,7 @@ export default (sequelize, DataTypes) => {
       validate: {
         isEmail: {
           args: true,
-          msg: "Please provide a valid email!",
+          msg: 'Please provide a valid email!',
         },
       },
     },
@@ -82,15 +85,15 @@ export default (sequelize, DataTypes) => {
       allowNull: false,
       validate: {
         notNull: {
-          msg: "Please provide customer address!",
+          msg: 'Please provide customer address!',
         },
       },
     },
     zone: {
       type: DataTypes.INTEGER,
       references: {
-        model: "zones",
-        key: "id",
+        model: 'zones',
+        key: 'id',
       },
     },
     active: {
@@ -100,7 +103,7 @@ export default (sequelize, DataTypes) => {
   });
   // create customer name from first and last name
   Customer.beforeSave((customer) => {
-    customer.name = customer.firstname + " " + customer.lastname;
+    customer.name = `${customer.firstname} ${customer.middlename} ${customer.lastname}`;
   });
   return Customer;
 };

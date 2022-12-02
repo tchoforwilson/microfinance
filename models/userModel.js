@@ -1,7 +1,7 @@
-"use strict";
-import bcrypt from "bcrypt";
+import bcrypt from 'bcrypt';
+
 export default (sequelize, DataTypes) => {
-  const User = sequelize.define("user", {
+  const User = sequelize.define('user', {
     id: {
       type: DataTypes.INTEGER,
       autoIncrement: true,
@@ -13,24 +13,27 @@ export default (sequelize, DataTypes) => {
       allowNull: false,
       validate: {
         notNull: {
-          msg: "First name is required!",
+          msg: 'First name is required!',
         },
         isAlpha: {
           args: true,
-          msg: "Please provide a valid first name",
+          msg: 'Please provide a valid first name',
         },
       },
+    },
+    middlename: {
+      type: DataTypes.STRING(30),
     },
     lastname: {
       type: DataTypes.STRING(30),
       allowNull: false,
       validate: {
         notNull: {
-          msg: "Last name is required!",
+          msg: 'Last name is required!',
         },
         isAlpha: {
           args: true,
-          msg: "Please provide a valid last name",
+          msg: 'Please provide a valid last name',
         },
       },
     },
@@ -39,7 +42,7 @@ export default (sequelize, DataTypes) => {
     },
     gender: {
       type: DataTypes.ENUM,
-      values: ["male", "female"],
+      values: ['male', 'female'],
     },
     identity: {
       type: DataTypes.STRING(9),
@@ -47,11 +50,11 @@ export default (sequelize, DataTypes) => {
       unique: true,
       validate: {
         notNull: {
-          msg: "User identity required!",
+          msg: 'User identity required!',
         },
         isNumeric: {
           args: true,
-          msg: "Invalid identity number!",
+          msg: 'Invalid identity number!',
         },
         len: 9,
       },
@@ -62,22 +65,22 @@ export default (sequelize, DataTypes) => {
       unique: true,
       validate: {
         notNull: {
-          msg: "Please provide user contact",
+          msg: 'Please provide user contact',
         },
         len: [9, 13],
       },
     },
     email: {
       type: DataTypes.STRING(30),
-      allowNull: false,
+      allowNull: true,
       unique: true,
       validate: {
         notNull: {
-          msg: "Please provide user email",
+          msg: 'Please provide user email',
         },
         isEmail: {
           args: true,
-          msg: "Please provide a valid email",
+          msg: 'Please provide a valid email',
         },
       },
     },
@@ -86,26 +89,23 @@ export default (sequelize, DataTypes) => {
       allowNull: false,
       validate: {
         notNull: {
-          msg: "Please provide customer address!",
+          msg: 'Please provide customer address!',
         },
       },
     },
     photo: {
       type: DataTypes.STRING,
-      defaultValue: "user.png",
+      defaultValue: 'user.png',
     },
     role: {
       type: DataTypes.ENUM,
-      values: ["manager", "accountant", "collector"],
+      values: ['manager', 'accountant', 'collector'],
       allowNull: false,
       validate: {
         notNull: {
-          msg: "Please provide user role",
+          msg: 'Please provide user role',
         },
       },
-    },
-    rights: {
-      type: DataTypes.ARRAY(DataTypes.STRING(30)),
     },
     password: {
       type: DataTypes.STRING,
@@ -121,7 +121,7 @@ export default (sequelize, DataTypes) => {
       validate: {
         isValid(value) {
           if (value !== this.password) {
-            throw new Error("passwords are not the same!");
+            throw new Error('passwords are not the same!');
           }
         },
       },
@@ -135,16 +135,16 @@ export default (sequelize, DataTypes) => {
     },
   });
   User.beforeSave(async (user) => {
-    if (!user.changed("password")) return;
+    if (!user.changed('password')) return;
     user.password = await bcrypt.hash(user.password, 12);
     user.passwordConfirm = user.password;
   });
   User.beforeSave((user) => {
-    if (!user.changed("password") || user.isNewRecord) return;
+    if (!user.changed('password') || user.isNewRecord) return;
     user.passwordChangedAt = Date.now() - 1000;
   });
   User.beforeSave((user) => {
-    user.name = user.firstname + " " + user.lastname;
+    user.name = `${user.firstname} ${user.lastname}`;
   });
 
   User.prototype.correctPassword = async function (

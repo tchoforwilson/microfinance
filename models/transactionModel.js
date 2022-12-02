@@ -8,12 +8,8 @@ export default (sequelize, DataTypes) => {
       unique: true,
     },
     date: {
-      type: DataTypes.DATEONLY,
-      defaultValue: sequelize.fn("NOW"),
-    },
-    time_done: {
       type: DataTypes.DATE,
-      defaultValue: DataTypes.NOW,
+      defaultValue: sequelize.fn("NOW"),
     },
     type: {
       type: DataTypes.ENUM,
@@ -52,11 +48,7 @@ export default (sequelize, DataTypes) => {
         key: "id",
       },
     },
-    userBalance: {
-      type: DataTypes.INTEGER,
-      defaultValue: 0,
-    },
-    accountBalance: {
+    balance: {
       type: DataTypes.INTEGER,
       defaultValue: 0,
     },

@@ -1,21 +1,9 @@
-"use strict";
 export default (sequelize, DataTypes) => {
-  const Zone = sequelize.define("zone", {
+  const Zone = sequelize.define('zone', {
     id: {
       type: DataTypes.INTEGER,
       autoIncrement: true,
       primaryKey: true,
-    },
-    code: {
-      type: DataTypes.VIRTUAL,
-      get() {
-        let code = "BLC";
-        for (var i = 0; i < 3 - this.id.toString().length; i++) {
-          code += "0";
-        }
-        code += this.id.toString();
-        return code;
-      },
     },
     name: {
       type: DataTypes.STRING,
@@ -23,10 +11,9 @@ export default (sequelize, DataTypes) => {
       unique: true,
       validate: {
         notNull: {
-          msg: "Zone name required!",
+          msg: 'Zone name required!',
         },
       },
-      unique: true,
     },
     description: {
       type: DataTypes.TEXT,
@@ -48,8 +35,8 @@ export default (sequelize, DataTypes) => {
     user: {
       type: DataTypes.INTEGER,
       references: {
-        model: "users",
-        key: "id",
+        model: 'users',
+        key: 'id',
       },
     },
     active: {
