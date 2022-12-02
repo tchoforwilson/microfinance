@@ -1,7 +1,6 @@
-"use strict";
-import AppError from "./../utils/appError.js";
-import catchAsync from "./../utils/catchAsync.js";
-import APIFeatures from "../utils/apiFeatures.js";
+import AppError from '../utils/appError';
+import catchAsync from '../utils/catchAsync';
+import APIFeatures from '../utils/apiFeatures';
 
 /**
  * Create a new single data in the Table
@@ -10,13 +9,13 @@ import APIFeatures from "../utils/apiFeatures.js";
  */
 export const createOne = (Model, ...fields) =>
   catchAsync(async (req, res, next) => {
+    // Pick rol from request body
+    const { role } = req.body;
     /**
      * For registering a new user, make sure user role is not a manager
      */
-    if (req.body.role && req.body.role === "manager") {
-      return next(
-        new AppError(`Invalid ${req.body.role} role specified!`, 400)
-      );
+    if (role && role === 'manager') {
+      return next(new AppError(`Invalid ${role} role specified!`, 400));
     }
 
     /**
@@ -26,7 +25,7 @@ export const createOne = (Model, ...fields) =>
 
     // SEND RESPONSE TO USER
     res.status(201).json({
-      status: "success",
+      status: 'success',
       data: {
         doc,
       },
@@ -48,12 +47,12 @@ export const getOne = (Model, ...excludedFields) =>
 
     // 2. Check if model exist
     if (!doc) {
-      return next(new AppError("No document found with this ID!", 404));
+      return next(new AppError('No document found with this ID!', 404));
     }
 
     // 3. Send response
     res.status(200).json({
-      status: "success",
+      status: 'success',
       data: {
         doc,
       },
@@ -84,12 +83,12 @@ export const getAll = (Model) =>
 
     // CHECK IF RESULTS WAS FOUND
     if (docs.count === 0) {
-      return next(new AppError("No documents found!", 404));
+      return next(new AppError('No documents found!', 404));
     }
 
     // SEND RESPONSE
     res.status(200).json({
-      status: "success",
+      status: 'success',
       data: {
         docs,
       },
@@ -109,7 +108,7 @@ export const updateOne = (Model, ...fields) =>
 
     // 2. Check if document exist
     if (!doc) {
-      return next(new AppError("No document found with this ID!", 404));
+      return next(new AppError('No document found with this ID!', 404));
     }
 
     // 3. Update document
@@ -123,7 +122,7 @@ export const updateOne = (Model, ...fields) =>
 
     // SEND RESPONSE
     res.status(201).json({
-      status: "success",
+      status: 'success',
       data: doc,
     });
   });
@@ -140,7 +139,7 @@ export const deleteOne = (Model) =>
 
     // 2. Check if it exists
     if (!doc) {
-      return next(new AppError("No document found with this ID!", 404));
+      return next(new AppError('No document found with this ID!', 404));
     }
 
     // 2. Set to inactive
@@ -148,34 +147,7 @@ export const deleteOne = (Model) =>
 
     // SEND RESPONSE
     res.status(204).json({
-      status: "success",
+      status: 'success',
       data: null,
-    });
-  });
-
-export const closeAccount = (Model) =>
-  catchAsync(async (req, res, next) => {
-    // 1. Find account
-    const account = await Model.findByPk(req.params.id);
-
-    // 2. Check if it exists
-    if (!account) {
-      return next(new AppError("No account found with this ID!", 404));
-    }
-
-    // 3. Make sure it is not a source account
-    if (account.type === "source") {
-      return next(new AppError("Can't delete source account!", 400));
-    }
-
-    // 4. set to inactive
-    account.active = false;
-    account.dateClosed = Date.now();
-    await account.save();
-
-    // SEND RESPONSE
-    res.status(201).json({
-      status: "success",
-      data: account,
     });
   });

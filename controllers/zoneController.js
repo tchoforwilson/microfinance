@@ -1,15 +1,13 @@
-"use strict";
-import AppError from "./../utils/appError.js";
-import catchAsync from "./../utils/catchAsync.js";
-import * as factory from "./handlerFactory.js";
-import database from "./../config/database.js";
+import * as factory from './handlerFactory';
+import database from '../config/database';
+
 const Zone = database.zone;
 
 // fields considered for create and update
-const fields = ["name", "description", "longitude", "latitude", "user"];
+const fields = ['name', 'description', 'longitude', 'latitude', 'user'];
 
 // exclude fields in query
-const excludedFields = ["createdAt", "updatedAt"];
+const excludedFields = ['createdAt', 'updatedAt'];
 
 export const createZone = factory.createOne(Zone, ...fields);
 export const getAllZones = factory.getAll(Zone);
