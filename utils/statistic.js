@@ -1,5 +1,6 @@
-import database from "../config/database.js";
-const Op = database.Sequelize.Op;
+import database from '../config/database';
+
+const { Op } = database.Sequelize;
 
 /**
  * Get a beginning and end date of a query
@@ -11,8 +12,10 @@ export const getStartEndMonth = (
   year = new Date().getFullYear(),
   month = new Date().getMonth() + 1
 ) => {
-  const startDate = year + "-" + month + "-" + "01";
-  const endDate = year + "-" + month + "-" + "31";
+  // eslint-disable-next-line no-useless-concat
+  const startDate = `${year}-${month}-` + `01`;
+  // eslint-disable-next-line no-useless-concat
+  const endDate = `${year}-${month}-` + `31`;
   return { startDate, endDate };
 };
 
@@ -23,9 +26,8 @@ export const getStartEndMonth = (
  * @param {String} filter -> query string to consider for summation
  * @return {query}
  */
-export const getSum = async (Model, column, filter) => {
-  return await Model.sum(column, { where: filter });
-};
+export const getSum = async (Model, column, filter) =>
+  await Model.sum(column, { where: filter });
 
 /**
  * Count the number of items in a column, and filter
@@ -34,9 +36,8 @@ export const getSum = async (Model, column, filter) => {
  * @param {String} filter -> query string to consider for summation
  * @return {query}
  */
-export const getCount = async (Model, column, filter) => {
-  return await Model.count(column, { where: filter });
-};
+export const getCount = async (Model, column, filter) =>
+  await Model.count(column, { where: filter });
 
 /**
  * Get the the statistics for a particular month

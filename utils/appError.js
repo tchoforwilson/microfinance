@@ -1,4 +1,3 @@
-"use strict";
 /**
  *Define a custom error to be displayed on user screen, or log on server console
  * if statusCode start with 4, then it is user manipulation error ans the response
@@ -15,7 +14,7 @@ export default class AppError extends Error {
     super(message);
 
     this.statusCode = statusCode;
-    this.status = `${statusCode}`.startsWith("4") ? "fail" : "error";
+    this.status = `${statusCode}`.startsWith('4') ? 'fail' : 'error';
     this.isOperational = true;
 
     Error.captureStackTrace(this, this.constructor);

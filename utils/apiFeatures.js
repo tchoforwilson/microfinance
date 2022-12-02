@@ -1,6 +1,6 @@
-"use strict";
-import database from "../config/database.js";
-const Op = database.Sequelize.Op;
+import database from '../config/database';
+
+const { Op } = database.Sequelize;
 /**
  * @description Class to implement filtering, sorting, limits and pagination
  * for all input queries
@@ -15,7 +15,7 @@ export default class APIFeatures {
     this.query = query;
     this.queryString = queryString;
 
-    this.queryStr = "";
+    this.queryStr = '';
     this.order = [];
     this.attributes = [];
     this.offset = 0;
@@ -23,8 +23,9 @@ export default class APIFeatures {
   }
 
   filter() {
+    // eslint-disable-next-line node/no-unsupported-features/es-syntax
     const queryObj = { ...this.queryString };
-    const excludedFields = ["page", "order", "limit", "attributes"];
+    const excludedFields = ['page', 'order', 'limit', 'attributes'];
     excludedFields.forEach((el) => delete queryObj[el]);
 
     // 1B) Advanced filtering
@@ -33,32 +34,32 @@ export default class APIFeatures {
       /\b(and|or|gte|gt|lte|lt|ne|eq|between)\b/g,
       (match) => `[Op.${match}]`
     );
-    this.queryStr = this.queryStr.replace("$", "");
+    this.queryStr = this.queryStr.replace('$', '');
     return this;
   }
 
   ordered() {
     if (this.queryString.order) {
-      const orderBy = this.queryString.order.split(",");
-      orderBy.forEach((el) => this.order.push([`${el}`, "DESC"]));
+      const orderBy = this.queryString.order.split(',');
+      orderBy.forEach((el) => this.order.push([`${el}`, 'DESC']));
     } else {
-      this.order.push(["createdAt", "DESC"]);
+      this.order.push(['createdAt', 'DESC']);
     }
     return this;
   }
 
   limitAttributes() {
     if (this.queryString.attributes) {
-      const attributed = this.queryString.attributes.split(",");
+      const attributed = this.queryString.attributes.split(',');
       attributed.forEach((el) => this.attributes.push(`${el}`));
     } else {
       this.attributes = {
         exclude: [
-          "password",
-          "passwordConfirm",
-          "active",
-          "passwordChangedAt",
-          "updatedAt",
+          'password',
+          'passwordConfirm',
+          'active',
+          'passwordChangedAt',
+          'updatedAt',
         ],
       };
     }
@@ -70,7 +71,7 @@ export default class APIFeatures {
     if (this.queryString.name) {
       const condition = { [Op.iRegexp]: `${this.queryString.name}` };
       this.queryStr = JSON.parse(this.queryStr);
-      this.queryStr["name"] = condition;
+      this.queryStr.name = condition;
     } else {
       this.queryStr = {};
     }
