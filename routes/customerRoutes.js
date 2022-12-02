@@ -1,30 +1,30 @@
-"use strict";
-import express from "express";
-import accountRouter from "./accountRoutes.js";
-import * as authController from "./../controllers/authController.js";
-import * as customerController from "../controllers/customerController.js";
+import express from 'express';
+
+import accountRouter from './accountRoutes';
+import * as authController from '../controllers/authController';
+import * as customerController from '../controllers/customerController';
 
 const router = express.Router({ mergeParams: true });
 
 router.use(authController.protect);
 
 // GET /customer/1/accounts
-router.use("/:customerId/accounts", accountRouter);
+router.use('/:customerId/accounts', accountRouter);
 
 // GET A SINGLE CUSTOMER IS NOT RESTRICTED COLLECTOR
-router.route("/:id").get(customerController.getCustomer);
+router.route('/:id').get(customerController.getCustomer);
 
-router.use(authController.restrictTo("manager", "accountant"));
+router.use(authController.restrictTo('manager', 'accountant'));
 
 // ADD A NEW CUSTOMER ACCOUNT
-router.route("/addAccount").post(customerController.addCustomerAccount);
+router.route('/addAccount').post(customerController.addCustomerAccount);
 
 router
-  .route("/")
+  .route('/')
   .post(customerController.createCustomer)
   .get(customerController.getAllCustomers);
 router
-  .route("/:id")
+  .route('/:id')
   .patch(customerController.updateCustomer)
   .delete(customerController.deleteCustomer);
 

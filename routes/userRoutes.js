@@ -1,37 +1,35 @@
-"use strict";
-import { Router } from "express";
-import zoneRouter from "./zoneRoutes.js";
-import * as authController from "./../controllers/authController.js";
-import * as userController from "./../controllers/userController.js";
+import { Router } from 'express';
+import zoneRouter from './zoneRoutes';
+import * as authController from '../controllers/authController';
+import * as userController from '../controllers/userController';
 
 const router = Router();
 
-router.post("/signup", authController.signup);
-router.post("/signin", authController.signin);
-router.get("/logout", authController.logout);
+router.post('/signup', authController.signup);
+router.post('/signin', authController.signin);
+router.get('/logout', authController.logout);
 
 // Protect all routes after this middleware
 router.use(authController.protect);
 
 // GET /users/1/zones
-router.use("/:userId/zones", zoneRouter);
+router.use('/:userId/zones', zoneRouter);
 
-router.patch("/updateMyPassword", authController.updateMyPassword);
-router.get("/me", userController.getMe, userController.getUser);
+router.patch('/updateMyPassword', authController.updateMyPassword);
+router.get('/me', userController.getMe, userController.getUser);
 router
-  .route("/updateMe")
-  .patch(authController.restrictTo("manager"), userController.updateMe);
+  .route('/updateMe')
+  .patch(authController.restrictTo('manager'), userController.updateMe);
 
 // RESTRICT ALL ROUTES AFTER THIS TO MANAGER AND ACCOUNTANT
-router.use(authController.restrictTo("manager", "accountant"));
+router.use(authController.restrictTo('manager', 'accountant'));
 
-router.post("/addAccount", userController.addUserAccount);
 router
-  .route("/")
+  .route('/')
   .post(userController.createUser)
   .get(userController.getAllUsers);
 router
-  .route("/:id")
+  .route('/:id')
   .get(userController.getUser)
   .patch(userController.updateUser)
   .delete(userController.deleteUser);
