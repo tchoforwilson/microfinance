@@ -1,3 +1,4 @@
+import catchAsync from './catchAsync';
 import database from '../config/database';
 
 const { Op } = database.Sequelize;
@@ -26,8 +27,9 @@ export const getStartEndMonth = (
  * @param {String} filter -> query string to consider for summation
  * @return {query}
  */
-export const getSum = async (Model, column, filter) =>
-  await Model.sum(column, { where: filter });
+export const getSum = catchAsync(
+  async (Model, column, filter) => await Model.sum(column, { where: filter })
+);
 
 /**
  * Count the number of items in a column, and filter
@@ -36,8 +38,9 @@ export const getSum = async (Model, column, filter) =>
  * @param {String} filter -> query string to consider for summation
  * @return {query}
  */
-export const getCount = async (Model, column, filter) =>
-  await Model.count(column, { where: filter });
+export const getCount = catchAsync(
+  async (Model, column, filter) => await Model.count(column, { where: filter })
+);
 
 /**
  * Get the the statistics for a particular month
@@ -46,13 +49,15 @@ export const getCount = async (Model, column, filter) =>
  * @param {String} month  -> The month to get the statistics if not provided, used the current date
  * @return {query}
  */
-export const getMonthlyStatics = async (
-  Model,
-  year = new Date().getFullYear(),
-  month = new Date().getMonth() + 1
-) => {
-  const { startDate, endDate } = getStartEndMonth(year, month);
-  return await Model.findAndCountAll({
-    where: { date: { [Op.between]: [startDate, endDate] } },
-  });
-};
+export const getMonthlyStatics = catchAsync(
+  async (
+    Model,
+    year = new Date().getFullYear(),
+    month = new Date().getMonth() + 1
+  ) => {
+    const { startDate, endDate } = getStartEndMonth(year, month);
+    return await Model.findAndCountAll({
+      where: { date: { [Op.between]: [startDate, endDate] } },
+    });
+  }
+);
