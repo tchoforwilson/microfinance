@@ -1,5 +1,5 @@
-import * as factory from './handlerFactory';
-import database from '../config/database';
+import * as factory from './handlerFactory.js';
+import database from '../config/database.js';
 
 const Zone = database.zone;
 

@@ -1,7 +1,7 @@
-import AppError from '../utils/appError';
-import catchAsync from '../utils/catchAsync';
-import * as factory from './handlerFactory';
-import database from '../config/database';
+import AppError from '../utils/appError.js';
+import catchAsync from '../utils/catchAsync.js';
+import * as factory from './handlerFactory.js';
+import database from '../config/database.js';
 
 const User = database.user;
 

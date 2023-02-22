@@ -1,6 +1,6 @@
-import AppError from '../utils/appError';
-import catchAsync from '../utils/catchAsync';
-import APIFeatures from '../utils/apiFeatures';
+import AppError from '../utils/appError.js';
+import catchAsync from '../utils/catchAsync.js';
+import APIFeatures from '../utils/apiFeatures.js';
 
 /**
  * Create a new single data in the Table

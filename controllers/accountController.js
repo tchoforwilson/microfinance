@@ -1,7 +1,7 @@
-import database from '../config/database';
-import catchAsync from '../utils/catchAsync';
-import * as factory from './handlerFactory';
-import * as statistic from '../utils/statistic';
+import database from '../config/database.js';
+import catchAsync from '../utils/catchAsync.js';
+import * as factory from './handlerFactory.js';
+import * as statistic from '../utils/statistic.js';
 
 const Account = database.account;
 
