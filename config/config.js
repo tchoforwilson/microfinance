@@ -1,20 +1,20 @@
-"use strict";
-import { config } from "dotenv";
-config({ path: "./config.env" });
+import { config } from 'dotenv';
 
-let DATABASE = undefined;
+config({ path: './config.env' });
+
+let DATABASE;
 switch (process.env.NODE_ENV) {
-  case "development":
+  case 'development':
     DATABASE = process.env.DATABASE_DEV;
     break;
-  case "production":
+  case 'production':
     DATABASE = process.env.DATABASE_PROD;
     break;
-  case "test":
+  case 'test':
     DATABASE = process.env.DATABASE_TEST;
     break;
   default:
-    DATABASE = process.env.DATABASE_TEST;
+    DATABASE = process.env.DATABASE_DEV;
 }
 
 const DatabaseConfig = {

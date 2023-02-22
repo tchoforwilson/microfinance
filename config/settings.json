@@ -1,0 +1,17 @@
+{
+    "name": "microfinance",
+    "tariffs":[
+        {"from":3500, "to": 20000, "charge":450},
+        {"from":20001, "to": 400000, "charge":800},
+        {"from":40001, "to": 600000, "charge":1150},
+        {"from":60001, "to": 800000, "charge":1500},
+        {"from":80001, "to": 100000, "charge":1900},
+        {"from":100001, "charge":2300}
+    ],
+    "month":{
+        "start":1,
+        "end":31
+    },
+    "minDepositAmount":500,
+    "deduction":"automatic"
+}

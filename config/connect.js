@@ -1,9 +1,29 @@
-import database from "./database.js";
-export async function connectDB(env, params) {
-  await database.sequelize.sync(params);
-  console.log(`Database running in ${env} mode`);
-}
+import database from './database.js';
 
-export async function closeDB() {
-  await database.sequelize.close();
-}
+export const connectDB = (env, params) => {
+  database.sequelize
+    .sync(params)
+    .then(() => {
+      console.log(`Database running in ${env} mode`);
+    })
+    .catch((error) => {
+      console.error('An error occured', error);
+    });
+  // .finally((error) => {
+  //   console.warn('Unable to start database', error);
+  // });
+};
+
+export const closeDB = () => {
+  database.sequelize
+    .close()
+    .then(() => {
+      console.log('Database successfully closed!!!');
+    })
+    .catch((error) => {
+      console.error('Error: Unable to stop database', error);
+    });
+  // .finally((error) => {
+  //   console.warn('Error: ', error);
+  // });
+};
