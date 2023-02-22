@@ -21,9 +21,6 @@ export default (sequelize, DataTypes) => {
         },
       },
     },
-    middlename: {
-      type: DataTypes.STRING(30),
-    },
     lastname: {
       type: DataTypes.STRING(30),
       allowNull: false,
@@ -72,7 +69,7 @@ export default (sequelize, DataTypes) => {
     },
     email: {
       type: DataTypes.STRING(30),
-      allowNull: true,
+      allowNull: false,
       unique: true,
       validate: {
         notNull: {

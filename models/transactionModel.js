@@ -1,5 +1,5 @@
 export default (sequelize, DataTypes) => {
-  const Transaction = sequelize.define("transaction", {
+  const Transaction = sequelize.define('transaction', {
     id: {
       type: DataTypes.INTEGER,
       autoIncrement: true,
@@ -9,23 +9,23 @@ export default (sequelize, DataTypes) => {
     },
     date: {
       type: DataTypes.DATE,
-      defaultValue: sequelize.fn("NOW"),
+      defaultValue: sequelize.fn('NOW'),
     },
     type: {
       type: DataTypes.ENUM,
-      values: ["deposit", "withdrawal"],
+      values: ['deposit', 'withdrawal'],
       allowNull: false,
       validate: {
         notNull: {
-          msg: "Transaction type!",
+          msg: 'Transaction type!',
         },
       },
     },
     user: {
       type: DataTypes.INTEGER,
       references: {
-        model: "users",
-        key: "id",
+        model: 'users',
+        key: 'id',
       },
     },
     amount: {
@@ -33,19 +33,19 @@ export default (sequelize, DataTypes) => {
       allowNull: false,
       validate: {
         notNull: {
-          msg: "Amount is transaction required!",
+          msg: 'Amount in transaction required!',
         },
         isNumeric: {
           args: true,
-          msg: "Invalid amount!",
+          msg: 'Invalid amount!',
         },
       },
     },
     account: {
       type: DataTypes.INTEGER,
       references: {
-        model: "accounts",
-        key: "id",
+        model: 'accounts',
+        key: 'id',
       },
     },
     balance: {

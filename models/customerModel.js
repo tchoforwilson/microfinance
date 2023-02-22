@@ -19,9 +19,6 @@ export default (sequelize, DataTypes) => {
         },
       },
     },
-    middlename: {
-      type: DataTypes.STRING(30),
-    },
     lastname: {
       type: DataTypes.STRING(30),
       allowNull: false,
@@ -103,7 +100,7 @@ export default (sequelize, DataTypes) => {
   });
   // create customer name from first and last name
   Customer.beforeSave((customer) => {
-    customer.name = `${customer.firstname} ${customer.middlename} ${customer.lastname}`;
+    customer.name = `${customer.firstname} ${customer.lastname}`;
   });
   return Customer;
 };
