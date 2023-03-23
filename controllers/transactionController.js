@@ -1,9 +1,12 @@
 import fs from 'fs';
+import _ from 'lodash';
 import AppError from '../utils/appError.js';
 import catchAsync from '../utils/catchAsync.js';
 import database from '../config/database.js';
+import { getSum, getStartEndMonth } from '../utils/statistic.js';
 import * as factory from './handlerFactory.js';
 
+const Op = database.Sequelize.Op;
 const Account = database.account;
 const Transaction = database.transaction;
 
@@ -13,6 +16,21 @@ const excludedFields = ['createdAt', 'updatedAt'];
 const settings = JSON.parse(
   fs.readFileSync(new URL('../config/settings.json', import.meta.url), 'utf-8')
 );
+
+/**
+ * @brief Get the charge to be deducted from a account
+ * based on the amount provided
+ * @param {Number} amount
+ * @return {Number} charge
+ */
+function getMonthlyTariff(amount) {
+  const tariffs = _.get(settings, 'tariffs');
+  tariffs.forEach((tariff) => {
+    if (amount > tariff.from && amount <= tariff?.to) {
+      return tariff.charge;
+    }
+  });
+}
 
 export const deposit = catchAsync(async (req, res, next) => {
   // 1. Get amount and account id
@@ -94,4 +112,40 @@ export const withdraw = catchAsync(async (req, res, next) => {
 });
 
 export const getTransaction = factory.getOne(Transaction, ...excludedFields);
-export const getTransactions = factory.getAll(Transaction);
+export const getAllTransactions = factory.getAll(Transaction);
+
+export const monthlyDeduction = catchAsync(async (req, res, next) => {
+  // 1. Get all accounts
+  const accounts = await Account.findAll();
+
+  // 2. Check if accounts exists
+  if (!accounts || accounts.length < 1) {
+    return next(new AppError('No accounts found!', 404));
+  }
+  // 3. Build the date
+  const { startDate, endDate } = getStartEndMonth();
+  let totalAmount = 0;
+  accounts.forEach(async (account) => {
+    const filter = {
+      [Op.and]: [
+        { account: account.id },
+        { type: 'deposit' },
+        { date: { [Op.between]: [startDate, endDate] } },
+      ],
+    };
+    const acct = await Account.findByPk(account.id); // Get account
+    const sum = await getSum(Transaction, 'amount', filter);
+    // 4. Deduct tariff from the persons account
+    const tariff = getMonthlyTariff(sum);
+    console.log(tariff);
+    // acct.balance -= tariff;
+    totalAmount += tariff; // sum tariff deducted
+  });
+  // SEND RESPONSE
+  res.status(200).json({
+    status: 'success',
+    data: {
+      totalAmount,
+    },
+  });
+});
