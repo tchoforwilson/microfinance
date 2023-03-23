@@ -100,7 +100,7 @@ export default (sequelize, DataTypes) => {
   });
   // create customer name from first and last name
   Customer.beforeSave((customer) => {
-    customer.name = `${customer.firstname} ${customer.lastname}`;
+    customer.name = [customer.firstname, customer.lastname].join(' ');
   });
   return Customer;
 };
