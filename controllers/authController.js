@@ -1,11 +1,13 @@
 import jwt from 'jsonwebtoken';
-import { promisify } from 'es6-promisify';
-import AppError from '../utils/appError';
-import catchAsync from '../utils/catchAsync';
-import database from '../config/database';
+import { promisify } from 'util';
+import AppError from '../utils/appError.js';
+import catchAsync from '../utils/catchAsync.js';
+import database from '../config/database.js';
 
 const User = database.user;
 const { Op } = database.Sequelize;
+
+const attributes = ['id', 'name', 'email', 'role', 'address', 'contact'];
 
 /**
  * Generate a sign token
@@ -23,10 +25,21 @@ const signToken = (id) =>
  * @param {Number} statusCode  -> Response status code
  * @param {Object} res  -> Response
  */
-const createSendToken = (user, statusCode, res) => {
+const createSendToken = (user, statusCode, req, res) => {
   const token = signToken(user.id);
-  // Remove password from output
+
+  // Cookie token
+  res.cookie('jwt', token, {
+    expires: new Date(
+      Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000
+    ),
+    httpOnly: true,
+    secure: req.secure || req.headers['x-forwarded-proto'] === 'https',
+  });
+
+  // Remove passwords from output
   user.password = undefined;
+  user.passwordConfirm = undefined;
 
   res.status(statusCode).json({
     status: 'success',
@@ -60,17 +73,7 @@ export const signup = catchAsync(async (req, res, next) => {
     where: {
       [Op.or]: [{ email }, { contact: email }],
     },
-    attributes: [
-      'id',
-      'firstname',
-      'lastname',
-      'gender',
-      'email',
-      'role',
-      'address',
-      'contact',
-      'password',
-    ],
+    attributes: [...attributes, 'password'],
   });
 
   // 3. User doesn't exist, means not registered
@@ -78,11 +81,8 @@ export const signup = catchAsync(async (req, res, next) => {
     return next(new AppError('You are not yet registered!', 404));
   }
 
-  // Get the values
-  const userData = user.dataValues;
-
   // 4. Presence of password means user login
-  if (userData.password) {
+  if (user.password) {
     return next(new AppError('Already registered! Please login', 403));
   }
 
@@ -90,7 +90,7 @@ export const signup = catchAsync(async (req, res, next) => {
   user.password = password;
   user.passwordConfirm = passwordConfirm;
   await user.save();
-  createSendToken(userData, 201, res);
+  createSendToken(user, 201, req, res);
 });
 
 export const signin = catchAsync(async (req, res, next) => {
@@ -118,17 +118,15 @@ export const signin = catchAsync(async (req, res, next) => {
     return next(new AppError('Access denied!', 403));
   }
 
-  const userData = user.dataValues;
-
   // 3) if password is null, user need to signup
-  if (!userData.password) {
+  if (!user.password) {
     return next(new AppError('Please signup!', 400));
   }
 
   if (!(await user.correctPassword(password, user.password))) {
     return next(new AppError('Incorrect email or password', 401));
   }
-  createSendToken(userData, 200, res);
+  createSendToken(user, 200, req, res);
 });
 
 export const protect = catchAsync(async (req, res, next) => {
@@ -143,31 +141,18 @@ export const protect = catchAsync(async (req, res, next) => {
     token = req.cookies.jwt;
   }
 
-  if (!token || token === null) {
+  if (!token) {
     return next(
       new AppError('You are not logged in! Please log in to get access.', 401)
     );
   }
 
   // 2. verify token
-  let decoded;
-  try {
-    decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
-    // eslint-disable-next-line node/no-unsupported-features/es-syntax
-  } catch {
-    return next(new AppError('Invalid request token,please log in again', 500));
-  }
+  const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
+
   // 3) Check if user still exists
   const currentUser = await User.findByPk(decoded.id, {
-    attributes: [
-      'id',
-      'firstname',
-      'lastname',
-      'email',
-      'role',
-      'address',
-      'contact',
-    ],
+    attributes,
   });
   if (!currentUser) {
     return next(new AppError("User doesn't exist!", 404));
@@ -216,7 +201,7 @@ export const updateMyPassword = catchAsync(async (req, res, next) => {
   await user.save();
 
   // 6. Log in user and send JWT
-  createSendToken(user, 200, res);
+  createSendToken(user, 200, req, res);
 });
 
 export const restrictTo =
