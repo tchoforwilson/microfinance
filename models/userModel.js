@@ -141,7 +141,7 @@ export default (sequelize, DataTypes) => {
     user.passwordChangedAt = Date.now() - 1000;
   });
   User.beforeSave((user) => {
-    user.name = `${user.firstname} ${user.lastname}`;
+    user.name = [user.firstname, user.lastname].join(' ');
   });
 
   User.prototype.correctPassword = async function (
