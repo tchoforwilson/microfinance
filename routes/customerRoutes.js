@@ -1,10 +1,9 @@
-import express from 'express';
+import { Router } from 'express';
+import accountRouter from './accountRoutes.js';
+import * as authController from '../controllers/authController.js';
+import * as customerController from '../controllers/customerController.js';
 
-import accountRouter from './accountRoutes';
-import * as authController from '../controllers/authController';
-import * as customerController from '../controllers/customerController';
-
-const router = express.Router({ mergeParams: true });
+const router = Router({ mergeParams: true });
 
 router.use(authController.protect);
 
