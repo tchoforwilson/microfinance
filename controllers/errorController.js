@@ -1,4 +1,4 @@
-import AppError from '../utils/appError';
+import AppError from '../utils/appError.js';
 
 const handleDuplicateFieldsDB = (err) => {
   const { errors } = err;
