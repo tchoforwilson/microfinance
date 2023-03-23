@@ -1,8 +1,8 @@
-import express from 'express';
-import * as authController from '../controllers/authController';
-import * as transactionController from '../controllers/transactionController';
+import { Router } from 'express';
+import * as authController from '../controllers/authController.js';
+import * as transactionController from '../controllers/transactionController.js';
 
-const router = express.Router();
+const router = Router();
 
 router.use(authController.protect);
 
@@ -14,10 +14,15 @@ router
     authController.restrictTo('manager', 'accountant'),
     transactionController.withdraw
   );
+router
+  .route('/deduction')
+  .get(
+    authController.restrictTo('manager'),
+    transactionController.monthlyDeduction
+  );
 
 // Get all transactions
-router.route('/').get(transactionController.getTransactions);
-
+router.route('/').get(transactionController.getAllTransactions);
 router.route('/:id').get(transactionController.getTransaction);
 
 // /:userId/transactions
