@@ -1,13 +1,13 @@
 import { Router } from 'express';
-import zoneRouter from './zoneRoutes';
-import * as authController from '../controllers/authController';
-import * as userController from '../controllers/userController';
+import zoneRouter from './zoneRoutes.js';
+import * as authController from '../controllers/authController.js';
+import * as userController from '../controllers/userController.js';
 
 const router = Router();
 
 router.post('/signup', authController.signup);
 router.post('/signin', authController.signin);
-router.get('/logout', authController.logout);
+//router.get('/logout', authController.logout);
 
 // Protect all routes after this middleware
 router.use(authController.protect);
