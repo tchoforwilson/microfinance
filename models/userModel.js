@@ -1,4 +1,5 @@
 import bcrypt from 'bcrypt';
+import validator from 'validator';
 
 export default (sequelize, DataTypes) => {
   const User = sequelize.define('user', {
@@ -60,12 +61,7 @@ export default (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: false,
       unique: true,
-      validate: {
-        notNull: {
-          msg: 'Please provide user contact',
-        },
-        len: [9, 13],
-      },
+      validate: [validator.isMobilePhone, 'Please provide a valid contact'],
     },
     email: {
       type: DataTypes.STRING(30),
@@ -116,11 +112,11 @@ export default (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       allowNull: true,
       validate: {
-        isValid(value) {
-          if (value !== this.password) {
-            throw new Error('passwords are not the same!');
-          }
+        // This only works on CREATE and SAVE!!!
+        validator: function (el) {
+          return el === this.password;
         },
+        msg: 'Passwords are not the same!',
       },
     },
     passwordChangedAt: {
