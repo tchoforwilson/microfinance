@@ -2,6 +2,7 @@ import { Router } from 'express';
 import accountRouter from './accountRoutes.js';
 import * as authController from '../controllers/authController.js';
 import * as customerController from '../controllers/customerController.js';
+import { uploadPhoto, resizePhoto } from '../utils/upload.js';
 
 const router = Router({ mergeParams: true });
 
@@ -20,11 +21,19 @@ router.route('/addAccount').post(customerController.addCustomerAccount);
 
 router
   .route('/')
-  .post(customerController.createCustomer)
+  .post(
+    uploadPhoto,
+    resizePhoto('customers'),
+    customerController.createCustomer
+  )
   .get(customerController.getAllCustomers);
 router
   .route('/:id')
-  .patch(customerController.updateCustomer)
+  .patch(
+    uploadPhoto,
+    resizePhoto('customers'),
+    customerController.updateCustomer
+  )
   .delete(customerController.deleteCustomer);
 
 export default router;
