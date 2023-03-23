@@ -1,7 +1,7 @@
-import * as factory from './handlerFactory';
-import catchAsync from '../utils/catchAsync';
-import database from '../config/database';
-import AppError from '../utils/appError';
+import * as factory from './handlerFactory.js';
+import catchAsync from '../utils/catchAsync.js';
+import database from '../config/database.js';
+import AppError from '../utils/appError.js';
 
 const Customer = database.customer;
 const Account = database.account;
