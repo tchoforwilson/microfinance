@@ -2,6 +2,7 @@ import { Router } from 'express';
 import zoneRouter from './zoneRoutes.js';
 import * as authController from '../controllers/authController.js';
 import * as userController from '../controllers/userController.js';
+import { uploadPhoto, resizePhoto } from '../utils/upload.js';
 
 const router = Router();
 
@@ -19,7 +20,12 @@ router.patch('/updateMyPassword', authController.updateMyPassword);
 router.get('/me', userController.getMe, userController.getUser);
 router
   .route('/updateMe')
-  .patch(authController.restrictTo('manager'), userController.updateMe);
+  .patch(
+    authController.restrictTo('manager'),
+    uploadPhoto,
+    resizePhoto('users'),
+    userController.updateMe
+  );
 
 // RESTRICT ALL ROUTES AFTER THIS TO MANAGER AND ACCOUNTANT
 router.use(authController.restrictTo('manager', 'accountant'));
@@ -31,7 +37,7 @@ router
 router
   .route('/:id')
   .get(userController.getUser)
-  .patch(userController.updateUser)
+  .patch(uploadPhoto, resizePhoto('users'), userController.updateUser)
   .delete(userController.deleteUser);
 
 export default router;
