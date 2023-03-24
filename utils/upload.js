@@ -1,7 +1,7 @@
 import multer from 'multer';
 import sharp from 'sharp';
-import AppError from '../utilities/appError.js';
-import catchAsync from '../utilities/catchAsync.js';
+import AppError from './appError.js';
+import catchAsync from './catchAsync.js';
 
 /**
  * @breif Multer memory storage
