@@ -64,10 +64,16 @@ export const updateMe = catchAsync(async (req, res, next) => {
   const filteredBody = filterObj(req.body, ...fields);
   if (req.file) filteredBody.photo = req.file.filename;
 
-  // 3) Update user document
-  const updatedUser = await User.update(filteredBody, {
+  // 3) Get user
+  const updatedUser = await User.findByPk(req.user.id);
+
+  // 4) Update user document
+  await User.update(filteredBody, {
     where: { id: req.user.id },
   });
+
+  // 5) Reload document
+  await updatedUser.reload();
 
   res.status(200).json({
     status: 'success',
