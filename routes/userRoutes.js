@@ -37,7 +37,7 @@ router
 router
   .route('/:id')
   .get(userController.getUser)
-  .patch(uploadPhoto, resizePhoto('users'), userController.updateUser)
+  .patch(userController.updateUser)
   .delete(userController.deleteUser);
 
 export default router;
