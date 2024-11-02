@@ -4,7 +4,7 @@ import AppError from '../utils/appError.js';
 import catchAsync from '../utils/catchAsync.js';
 import database from '../config/database.js';
 import { getSum, getStartEndMonth } from '../utils/statistic.js';
-import * as factory from './handlerFactory.js';
+import * as factory from './handler.factory.js';
 
 const Op = database.Sequelize.Op;
 const Account = database.account;

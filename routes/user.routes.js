@@ -1,14 +1,10 @@
 import { Router } from 'express';
-import zoneRouter from './zoneRoutes.js';
-import * as authController from '../controllers/authController.js';
-import * as userController from '../controllers/userController.js';
+import zoneRouter from './zone.routes.js';
+import * as authController from '../controllers/auth.controller.js';
+import * as userController from '../controllers/user.controller.js';
 import { uploadPhoto, resizePhoto } from '../utils/upload.js';
 
 const router = Router();
-
-router.post('/signup', authController.signup);
-router.post('/signin', authController.signin);
-//router.get('/logout', authController.logout);
 
 // Protect all routes after this middleware
 router.use(authController.protect);
@@ -16,7 +12,6 @@ router.use(authController.protect);
 // GET /users/1/zones
 router.use('/:userId/zones', zoneRouter);
 
-router.patch('/updateMyPassword', authController.updateMyPassword);
 router.get('/me', userController.getMe, userController.getUser);
 router
   .route('/updateMe')

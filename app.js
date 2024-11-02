@@ -5,13 +5,14 @@ import express, { json, urlencoded } from 'express';
 import morgan from 'morgan';
 import cookieParser from 'cookie-parser';
 
-import userRouter from './routes/userRoutes.js';
-import zoneRouter from './routes/zoneRoutes.js';
-import customerRouter from './routes/customerRoutes.js';
-import accountRouter from './routes/accountRoutes.js';
-import transactionRouter from './routes/transactionRoutes.js';
+import authRouter from "./routes/auth.routes.js";
+import userRouter from './routes/user.routes.js';
+import zoneRouter from './routes/zone.routes.js';
+import customerRouter from './routes/customer.routes.js';
+import accountRouter from './routes/account.routes.js';
+import transactionRouter from './routes/transaction.routes.js';
 import AppError from './utils/appError.js';
-import globalErrorHandler from './controllers/errorController.js';
+import globalErrorHandler from './controllers/error.controller.js';
 
 const app = express();
 
@@ -44,6 +45,7 @@ app.use((req, res, next) => {
 });
 
 // ROUTES
+app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/users', userRouter);
 app.use('/api/v1/zones', zoneRouter);
 app.use('/api/v1/customers', customerRouter);

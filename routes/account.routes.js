@@ -1,6 +1,6 @@
 import { Router } from 'express';
-import * as authController from '../controllers/authController.js';
-import * as accountController from '../controllers/accountController.js';
+import * as authController from '../controllers/auth.controller.js';
+import * as accountController from '../controllers/account.controller.js';
 
 const router = Router({ mergeParams: true });
 

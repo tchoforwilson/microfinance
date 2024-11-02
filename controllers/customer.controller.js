@@ -1,4 +1,4 @@
-import * as factory from './handlerFactory.js';
+import * as factory from './handler.factory.js';
 import catchAsync from '../utils/catchAsync.js';
 import database from '../config/database.js';
 import AppError from '../utils/appError.js';

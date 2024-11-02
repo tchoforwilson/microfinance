@@ -1,6 +1,6 @@
 import database from '../config/database.js';
 import catchAsync from '../utils/catchAsync.js';
-import * as factory from './handlerFactory.js';
+import * as factory from './handler.factory.js';
 import * as statistic from '../utils/statistic.js';
 
 const Account = database.account;

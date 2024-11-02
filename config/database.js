@@ -1,10 +1,10 @@
 import { DataTypes, Sequelize } from 'sequelize';
 import config from './config.js';
-import User from '../models/userModel.js';
-import Customer from '../models/customerModel.js';
-import Account from '../models/accountModel.js';
-import Zone from '../models/zoneModel.js';
-import Transaction from '../models/transactionModel.js';
+import User from '../models/user.model.js';
+import Customer from '../models/customer.model.js';
+import Account from '../models/account.model.js';
+import Zone from '../models/zone.model.js';
+import Transaction from '../models/transaction.model.js';
 
 // Configuring database connection
 const sequelize = new Sequelize(config.database, config.user, config.password, {

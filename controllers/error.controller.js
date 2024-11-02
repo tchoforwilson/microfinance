@@ -3,7 +3,6 @@ import AppError from '../utils/appError.js';
 const handleDuplicateFieldsDB = (err) => {
   const { errors } = err;
   const error = errors[0];
-  // console.log("💥", error.message);
 
   const message = `Duplicate field value: ${error.value}. ${error.message}, Please use another value!`;
   return new AppError(message, 400);
@@ -73,8 +72,6 @@ const sendErrorProd = (err, req, res) => {
 };
 
 export default (err, req, res, next) => {
-  // console.log(err.stack);
-
   err.statusCode = err.statusCode || 500;
   err.status = err.status || 'error';
   if (process.env.NODE_ENV === 'development') {

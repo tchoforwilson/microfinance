@@ -1,7 +1,7 @@
 import { Router } from 'express';
-import accountRouter from './accountRoutes.js';
-import * as authController from '../controllers/authController.js';
-import * as customerController from '../controllers/customerController.js';
+import accountRouter from './account.routes.js';
+import * as authController from '../controllers/auth.controller.js';
+import * as customerController from '../controllers/customer.controller.js';
 import { uploadPhoto, resizePhoto } from '../utils/upload.js';
 
 const router = Router({ mergeParams: true });
