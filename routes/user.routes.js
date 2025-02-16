@@ -17,10 +17,16 @@ router
   .route('/updateMe')
   .patch(
     authController.restrictTo('manager'),
-    uploadPhoto,
-    resizePhoto('users'),
     userController.updateMe
-  );
+);
+  
+router.patch(
+  '/update-my-photo',
+  authController.restrictTo('manager'),
+  uploadPhoto,
+  resizePhoto('users'),
+  userController.updateMe
+);
 
 // RESTRICT ALL ROUTES AFTER THIS TO MANAGER AND ACCOUNTANT
 router.use(authController.restrictTo('manager', 'accountant'));
