@@ -1,16 +1,14 @@
-import { config } from 'dotenv';
+import { config } from "dotenv";
+import environment from "../utils/environment.js";
 
-config({ path: './config.env' });
+config({ path: "./config.env" });
 
 let DATABASE;
 switch (process.env.NODE_ENV) {
-  case 'development':
-    DATABASE = process.env.DATABASE_DEV;
-    break;
-  case 'production':
+  case environment.PROD:
     DATABASE = process.env.DATABASE_PROD;
     break;
-  case 'test':
+  case environment.TEST:
     DATABASE = process.env.DATABASE_TEST;
     break;
   default:
