@@ -1,0 +1,69 @@
+# docker-compose.yml
+version: '3.8'
+
+services:
+  # API Service Configuration
+  api:
+    build: .
+    container_name: api
+    ports:
+      - "9000:9000" 
+    environment:
+      - NODE_ENV=production
+      - PORT=9000
+      - DATABASE_HOST=postgres
+      - DATABASE_USER=tchoforwilson
+      - DATABASE_PASSWORD=admin4#good
+      - DATABASE_NAME=microfinance
+      - DATABASE_PORT=5432
+      - JWT_SECRET=your_jwt_secret_key
+      - JWT_EXPIRES_IN=3d
+    volumes:
+      - ./api:/app
+    depends_on:
+      - postgres
+    networks:
+      - backend-network
+    restart: unless-stopped
+
+  # PostgreSQL Service Configuration
+  postgres:
+    image: postgres:15-alpine
+    container_name: postgres_database
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=tchoforwilson
+      - POSTGRES_PASSWORD=admin123
+      - POSTGRES_DB=microfinance
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - backend-network
+    restart: unless-stopped
+
+  # PgAdmin (Optional - for database management)
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=tchoforwilson
+      - PGADMIN_DEFAULT_PASSWORD=tchoforwilson@gmail.com
+    ports:
+      - "5050:80"
+    depends_on:
+      - postgres
+    networks:
+      - backend-network
+    restart: unless-stopped
+
+# Volume Configuration
+volumes:
+  postgres_data:
+    name: postgres_data_volume
+
+# Network Configuration
+networks:
+  backend-network:
+    driver: bridge
+    name: backend_network
