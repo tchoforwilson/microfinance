@@ -4,3 +4,4 @@ coverage
 .prettierrc
 .eslintrc.json
 .vscode
+.env
